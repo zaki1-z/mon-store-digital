@@ -1,111 +1,59 @@
 import React, { useState, useEffect } from 'react';
 
-const initialProducts = [
-  {
-    id: '1',
-    title: 'Licence Windows 11 Pro (À vie)',
-    category: 'Logiciel Officiel',
-    description: 'Activation officielle et définitive pour 1 PC. Mises à jour incluses.',
-    price: 150,
-    image_url: 'https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=500&auto=format&fit=crop&q=60'
-  },
-  {
-    id: '2',
-    title: 'Microsoft Office 2021 Pro Plus',
-    category: 'Bureautique',
-    description: 'Word, Excel, PowerPoint, Outlook. Clé officielle liée à votre compte.',
-    price: 250,
-    image_url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&auto=format&fit=crop&q=60'
-  }
-];
+// Lien CSV de ton Google Sheet
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pI2pgy_yIHrCeNWm07SaS6XkH2Fsf9JloE1BGq-WYh5-OyyCu8YyFt89WjDdhzL5CI_/pub?output=csv';
 
 export default function App() {
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('richtech_catalog_v3');
-    return saved ? JSON.parse(saved) : initialProducts;
-  });
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
-
+  // États du formulaire de commande client
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [clientNom, setClientNom] = useState('');
   const [clientPrenom, setClientPrenom] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  const [editingId, setEditingId] = useState(null);
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [image_url, setImage_url] = useState('');
-
+  // Charger et convertir le CSV de Google Sheets en objets JavaScript
   useEffect(() => {
-    localStorage.setItem('richtech_catalog_v3', JSON.stringify(products));
-  }, [products]);
+    fetch(SHEET_CSV_URL)
+      .then((res) => res.text())
+      .then((csvText) => {
+        const rows = csvText.split('\n').map(row => {
+          // Gestion basique du découpage CSV
+          return row.split(',').map(val => val.trim().replace(/^"(.*)"$/, '$1'));
+        });
 
-  const handleAdminLogin = (e) => {
-    e.preventDefault();
-    if (adminPassword === 'richtech2026') {
-      setIsAdmin(true);
-      setShowAdminLogin(false);
-      setAdminPassword('');
-      alert('Mode Administrateur activé !');
-    } else {
-      alert('Mot de passe incorrect.');
-    }
-  };
+        if (rows.length < 2) {
+          setLoading(false);
+          return;
+        }
 
-  const handleLogoutAdmin = () => {
-    setIsAdmin(false);
-    alert('Déconnexion du mode admin.');
-  };
+        const headers = rows[0]; // ['id', 'title', 'category', 'description', 'price', 'image_url']
+        const parsedProducts = [];
 
-  const resetForm = () => {
-    setTitle(''); setCategory(''); setDescription(''); setPrice(''); setImage_url(''); setEditingId(null);
-  };
+        for (let i = 1; i < rows.length; i++) {
+          const values = rows[i];
+          if (values.length >= headers.length && values[1]) {
+            parsedProducts.push({
+              id: values[0] || i.toString(),
+              title: values[1] || '',
+              category: values[2] || 'Solution Pro',
+              description: values[3] || 'Solution professionnelle certifiée RichTech Maroc.',
+              price: Number(values[4]) || 0,
+              image_url: values[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
+            });
+          }
+        }
 
-  const handleSaveProduct = (e) => {
-    e.preventDefault();
-    if (!title || !price) return alert("Le nom et le prix sont obligatoires !");
-
-    if (editingId) {
-      setProducts(products.map(p => p.id === editingId ? {
-        ...p, title, category: category || 'Solution Pro', description, price: Number(price), image_url: image_url || p.image_url
-      } : p));
-      alert('Produit modifié avec succès !');
-    } else {
-      const newProduct = {
-        id: Date.now().toString(),
-        title,
-        category: category || 'Solution Pro',
-        description: description || 'Solution professionnelle certifiée RichTech Maroc.',
-        price: Number(price),
-        image_url: image_url || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
-      };
-      setProducts([newProduct, ...products]);
-      alert('Produit ajouté avec succès !');
-    }
-    resetForm();
-  };
-
-  const handleEditClick = (product) => {
-    setEditingId(product.id);
-    setTitle(product.title);
-    setCategory(product.category);
-    setDescription(product.description);
-    setPrice(product.price);
-    setImage_url(product.image_url);
-    window.scrollTo({ top: 400, behavior: 'smooth' });
-  };
-
-  const handleDeleteProduct = (id) => {
-    if (confirm('Voulez-vous vraiment supprimer ce produit ?')) {
-      setProducts(products.filter(p => p.id !== id));
-    }
-  };
+        setProducts(parsedProducts);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Erreur chargement Google Sheet :', err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
@@ -139,46 +87,7 @@ export default function App() {
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
     }}>
-      <div style={{ maxWidth: '1350px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-        {isAdmin ? (
-          <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
-        ) : (
-          <button onClick={() => setShowAdminLogin(true)} style={authBtnStyle('#1e293b')}>⚙️ Espace Admin</button>
-        )}
-      </div>
-
-      {showAdminLogin && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
-        }}>
-          <div style={{
-            background: '#ffffff', border: '1px solid #e2e8f0',
-            borderRadius: '20px', padding: '35px', width: '100%', maxWidth: '400px', textAlign: 'center',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h3 style={{ color: '#0f172a', marginBottom: '20px' }}>⚙️ Connexion Administrateur</h3>
-            <form onSubmit={handleAdminLogin}>
-              <input 
-                type="password" placeholder="Mot de passe Admin" value={adminPassword} 
-                onChange={e => setAdminPassword(e.target.value)} 
-                style={{ ...inputStyleLight, marginBottom: '15px', boxSizing: 'border-box' }} required 
-              />
-              <button type="submit" style={{
-                width: '100%', background: '#0f172a', color: '#fff', border: 'none',
-                padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
-              }}>
-                Se connecter
-              </button>
-            </form>
-            <button onClick={() => setShowAdminLogin(false)} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer' }}>
-              Fermer ✕
-            </button>
-          </div>
-        </div>
-      )}
-
+      {/* Modal Formulaire Commande Client */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -221,6 +130,7 @@ export default function App() {
         </div>
       )}
 
+      {/* En-tête / Style Instagram Pro */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         <div style={{
           width: '130px', height: '130px', margin: '0 auto 20px auto',
@@ -247,49 +157,20 @@ export default function App() {
         </p>
       </header>
 
-      {isAdmin && (
-        <div style={{
-          maxWidth: '1350px', margin: '0 auto 30px auto', background: '#ffffff',
-          border: '1px solid #cbd5e1', borderRadius: '20px', padding: '30px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.3rem' }}>
-              {editingId ? '✏️ Modifier le produit' : '➕ Ajouter un nouveau produit'}
-            </h3>
-          </div>
-
-          <form onSubmit={handleSaveProduct} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
-            <input type="text" placeholder="Nom du produit" value={title} onChange={e => setTitle(e.target.value)} style={inputStyleLight} required />
-            <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyleLight} />
-            <input type="number" placeholder="Prix en DH (ex: 150)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyleLight} required />
-            <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={{ ...inputStyleLight, gridColumn: '1 / -1' }} />
-            <textarea placeholder="Description..." value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyleLight, gridColumn: '1 / -1', height: '80px' }}></textarea>
-            
-            <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
-              <button type="submit" style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>
-                {editingId ? 'Mettre à jour 💾' : 'Publier le produit 🚀'}
-              </button>
-              {editingId && (
-                <button type="button" onClick={resetForm} style={{ background: '#64748b', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '10px', cursor: 'pointer' }}>
-                  Annuler
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-      )}
-
+      {/* Catalogue Public */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
             ⚡ Catalogue & Licences Disponibles
           </h3>
           <span style={{ fontSize: '0.85rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '600' }}>
-            ● Boutique en ligne active
+            ● Connecté à Google Sheets
           </span>
         </div>
 
-        {products.length === 0 ? (
+        {loading ? (
+          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Chargement du catalogue...</p>
+        ) : products.length === 0 ? (
           <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit disponible pour le moment.</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
@@ -298,15 +179,8 @@ export default function App() {
                 background: '#ffffff',
                 border: '1px solid #e2e8f0',
                 borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
               }}>
-                {isAdmin && (
-                  <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
-                    <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
-                    <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
-                  </div>
-                )}
-
                 <div>
                   {product.image_url && (
                     <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
@@ -373,7 +247,6 @@ export default function App() {
 }
 
 const inputStyleLight = { background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', color: '#0f172a', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
-function authBtnStyle(bg) { return { background: bg, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' }; }
 function socialBtnStyle(color1, color2) {
   return {
     background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
