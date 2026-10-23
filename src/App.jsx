@@ -34,9 +34,12 @@ export default function App() {
         headers: { 'X-Master-Key': API_KEY }
       });
       const data = await res.json();
-      // JSONBin stocke les données dans .record
-      const items = data.record.record ? data.record.record : data.record;
-      setProducts(Array.isArray(items) ? items : []);
+      let items = data.record;
+      if (items && items.record) items = items.record;
+      if (!Array.isArray(items)) {
+        items = items ? [items] : [];
+      }
+      setProducts(items);
       setLoading(false);
     } catch (err) {
       console.error('Erreur chargement :', err);
@@ -46,14 +49,13 @@ export default function App() {
 
   const saveProductsToCloud = async (updatedProducts) => {
     try {
-      // On enveloppe les produits dans un objet { record: ... } pour respecter la structure JSONBin v3
       const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'X-Master-Key': API_KEY
         },
-        body: JSON.stringify({ record: updatedProducts })
+        body: JSON.stringify(updatedProducts)
       });
       
       if (res.ok) {
@@ -323,7 +325,7 @@ export default function App() {
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
               }}>
                 {isAdmin && (
-                  <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: '10' }}>
+                  <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
                     <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
                     <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
                   </div>
