@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-// URL de l'API JSON publique de ton Google Sheet (basée sur ton ID de document)
-const SPREADSHEET_ID = '168-meiLEI72HbPdlYpXOev_05ziUv_RyNhDWJ3thrNM';
-const SHEET_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/Feuille 1`;
+// Ton lien CSV direct de Google Sheets publié sur le web
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fysf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -15,26 +14,54 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // Charger les données proprement depuis l'API JSON de Google Sheets
+  // Charger et parser le CSV en direct
   useEffect(() => {
-    fetch(SHEET_URL)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          const formattedProducts = data.map((item, index) => ({
-            id: item.id || index.toString(),
-            title: item.title || 'Produit sans nom',
-            category: item.category || 'Solution Pro',
-            description: item.description || 'Solution professionnelle certifiée RichTech Maroc.',
-            price: Number(item.price) || 0,
-            image_url: item.image_url || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
-          }));
-          setProducts(formattedProducts);
+    fetch(CSV_URL)
+      .then((res) => res.text())
+      .then((csvText) => {
+        const lines = csvText.split('\n');
+        const parsedProducts = [];
+
+        // On commence à la ligne 1 pour ignorer les en-têtes (ligne 0)
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+
+          // Découpage intelligent gérant les virgules dans les guillemets
+          const row = [];
+          let inQuotes = false;
+          let currentVal = '';
+          
+          for (let char of line) {
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              row.push(currentVal.trim());
+              currentVal = '';
+            } else {
+              currentVal += char;
+            }
+          }
+          row.push(currentVal.trim());
+
+          // row correspond à [id, title, category, description, price, image_url]
+          if (row.length >= 2 && row[1]) {
+            parsedProducts.push({
+              id: row[0] || i.toString(),
+              title: row[1] || '',
+              category: row[2] || 'Solution Pro',
+              description: row[3] || 'Solution professionnelle certifiée RichTech Maroc.',
+              price: Number(row[4]) || 0,
+              image_url: row[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
+            });
+          }
         }
+
+        setProducts(parsedProducts);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Erreur chargement Google Sheet JSON :', err);
+        console.error('Erreur lecture CSV Google Sheets :', err);
         setLoading(false);
       });
   }, []);
@@ -148,7 +175,7 @@ export default function App() {
             ⚡ Catalogue & Licences Disponibles
           </h3>
           <span style={{ fontSize: '0.85rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '600' }}>
-            ● Google Sheets Connecté
+            ● Google Sheets Direct
           </span>
         </div>
 
