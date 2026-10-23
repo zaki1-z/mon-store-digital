@@ -208,4 +208,49 @@ export default function App() {
                   </div>
 
                   <button onClick={() => setSelectedProduct(product)} style={{
-                    width: '100%', background: '#0f172
+                    width: '100%', background: '#0f172a',
+                    color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                  }}>
+                    Acheter 🛒
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      <footer style={{
+        maxWidth: '1350px', margin: '80px auto 0 auto', background: '#ffffff',
+        border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px 30px',
+        textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+      }}>
+        <h4 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
+          RichTech Maroc • Solutions Informatiques & Sécurité
+        </h4>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '25px' }}>
+          Contactez-nous directement sur nos réseaux officiels :
+        </p>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
+          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
+          <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
+          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
+        </div>
+
+        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 RichTech Maroc. Tous droits réservés.</p>
+      </footer>
+    </div>
+  );
+}
+
+const inputStyleLight = { background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', color: '#0f172a', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
+function socialBtnStyle(color1, color2) {
+  return {
+    background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
+    color: '#fff', padding: '11px 22px', borderRadius: '12px',
+    textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+  };
+}
