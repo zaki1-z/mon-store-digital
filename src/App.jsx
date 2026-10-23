@@ -27,15 +27,18 @@ export default function App() {
     return saved ? JSON.parse(saved) : initialProducts;
   });
 
-  const [user, setUser] = useState(null); // { email, role, verifiedPurchases: [] }
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authEmail, setAuthEmail] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [enteredOtp, setEnteredOtp] = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
 
-  // Formulaire Admin
+  // États du formulaire de commande client
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [clientNom, setClientNom] = useState('');
+  const [clientPrenom, setClientPrenom] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
+
+  // États du formulaire Admin (Ajout / Modif)
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -48,52 +51,22 @@ export default function App() {
     localStorage.setItem('richtech_products', JSON.stringify(products));
   }, [products]);
 
-  // Étape 1 : Envoyer le code de confirmation par e-mail
-  const handleRequestOtp = (e) => {
-    e.preventDefault();
-    if (!authEmail || !authEmail.includes('@')) {
-      return alert("Veuillez entrer une adresse e-mail valide.");
-    }
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
-    setGeneratedOtp(code);
-    setOtpSent(true);
-    // Simulation de l'envoi d'e-mail (dans un cas réel, un service d'e-mailing envoie ce code)
-    alert(`[Simulation e-mail envoyé à ${authEmail}] 📧\nVotre code de confirmation de sécurité est : ${code}`);
-  };
-
-  // Étape 2 : Vérifier le code OTP
-  const handleVerifyOtp = (e) => {
-    e.preventDefault();
-    if (enteredOtp === generatedOtp) {
-      setUser({ email: authEmail, role: 'client', purchases: [] });
-      setShowAuthModal(false);
-      setAuthEmail('');
-      setEnteredOtp('');
-      setOtpSent(false);
-      alert("Identité confirmée avec succès ! Bienvenue.");
-    } else {
-      alert("Code de confirmation incorrect. Veuillez réessayer.");
-    }
-  };
-
-  // Connexion Admin sécurisée
+  // Connexion Admin
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (adminPassword === 'richtech2026') {
-      setUser({ email: 'admin@richtech.ma', role: 'admin', purchases: [] });
-      setShowAuthModal(false);
+      setIsAdmin(true);
+      setShowAdminLogin(false);
       setAdminPassword('');
-      alert('Connexion Administrateur réussie !');
+      alert('Mode Administrateur activé !');
     } else {
-      alert('Mot de passe administrateur incorrect.');
+      alert('Mot de passe incorrect.');
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    setEditingId(null);
-    resetForm();
-    alert('Déconnexion réussie.');
+  const handleLogoutAdmin = () => {
+    setIsAdmin(false);
+    alert('Déconnexion du mode admin.');
   };
 
   const resetForm = () => {
@@ -142,34 +115,34 @@ export default function App() {
     }
   };
 
-  const handleWhatsAppOrder = (product) => {
-    const message = encodeURIComponent(`Bonjour RichTech Maroc 👋, je souhaite commander :\n\n📌 *${product.title}*\n💰 Prix : $${product.price}\n\nJe souhaite procéder au paiement pour recevoir mon lien de téléchargement.`);
-    window.open(`https://wa.me/message/OHTL6X7NT4P7C1?text=${message}`, '_blank');
-  };
-
-  // Logique intelligente de téléchargement sécurisé après validation
-  const handleSecureDownload = (product) => {
-    if (!user) {
-      alert("Veuillez vous connecter avec votre e-mail pour accéder à vos téléchargements sécurisés.");
-      setShowAuthModal(true);
-      return;
+  // Validation de la commande et notification WhatsApp instantanée vers l'Admin
+  const handleCheckoutSubmit = (e) => {
+    e.preventDefault();
+    if (!clientNom || !clientPrenom || !clientEmail || !clientPhone) {
+      return alert("Veuillez remplir tous les champs du formulaire.");
     }
 
-    // Si l'utilisateur est admin, il a accès à tout
-    if (user.role === 'admin') {
-      if (product.file_url) window.open(product.file_url, '_blank');
-      else alert("Aucun fichier lié à ce produit.");
-      return;
-    }
+    // Construction du message de notification pour l'Admin sur WhatsApp
+    const adminMessage = encodeURIComponent(
+      `🚨 *NOUVELLE COMMANDE - RichTech Maroc*\n\n` +
+      `📦 *Produit :* ${selectedProduct.title}\n` +
+      `💰 *Prix :* $${selectedProduct.price}\n\n` +
+      `👤 *Client :* ${clientPrenom} ${clientNom}\n` +
+      `📧 *E-mail :* ${clientEmail}\n` +
+      `📞 *Téléphone :* ${clientPhone}\n\n` +
+      `Merci de traiter cette commande rapidement !`
+    );
 
-    // Pour un client normal : vérification si le produit a été payé/validé
-    const hasPaid = user.purchases && user.purchases.includes(product.id);
+    // Redirige l'administrateur/client vers WhatsApp avec la notification pré-remplie
+    window.open(`https://wa.me/message/OHTL6X7NT4P7C1?text=${adminMessage}`, '_blank');
 
-    if (hasPaid && product.file_url) {
-      window.open(product.file_url, '_blank');
-    } else {
-      alert(`🔒 Accès restreint :\n\nPour télécharger "${product.title}", le paiement doit d'abord être validé par notre équipe.\n\nVeuillez cliquer sur "Commander via WhatsApp" pour régler votre commande et valider votre accès.`);
-    }
+    // Réinitialisation
+    setSelectedProduct(null);
+    setClientNom('');
+    setClientPrenom('');
+    setClientEmail('');
+    setClientPhone('');
+    alert("Commande enregistrée ! Vous allez être redirigé vers WhatsApp pour notifier l'administrateur.");
   };
 
   return (
@@ -177,26 +150,17 @@ export default function App() {
       minHeight: '100vh', background: '#030712', color: '#f9fafb',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '40px 20px', overflowX: 'hidden'
     }}>
-      {/* Barre d'authentification supérieure */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
-          {user ? (
-            <span>Connecté : <strong style={{ color: '#38bdf8' }}>{user.email}</strong> {user.role === 'admin' && '👑 (Admin)'}</span>
-          ) : (
-            <span>Visiteur non authentifié</span>
-          )}
-        </div>
-        <div>
-          {user ? (
-            <button onClick={handleLogout} style={authBtnStyle('#ef4444')}>Se déconnecter</button>
-          ) : (
-            <button onClick={() => setShowAuthModal(true)} style={authBtnStyle('#2563eb')}>🔑 Connexion / Inscription par E-mail</button>
-          )}
-        </div>
+      {/* Barre supérieure Admin */}
+      <div style={{ maxWidth: '1100px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        {isAdmin ? (
+          <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
+        ) : (
+          <button onClick={() => setShowAdminLogin(true)} style={authBtnStyle('#334155')}>⚙️ Espace Admin</button>
+        )}
       </div>
 
-      {/* Modal d'Authentification par Code e-mail (OTP) et Admin */}
-      {showAuthModal && (
+      {/* Modal de connexion Admin */}
+      {showAdminLogin && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
           background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
@@ -206,42 +170,7 @@ export default function App() {
             background: '#0f172a', border: '1px solid rgba(56, 189, 248, 0.3)',
             borderRadius: '20px', padding: '35px', width: '100%', maxWidth: '400px', textAlign: 'center'
           }}>
-            <h3 style={{ color: '#fff', marginBottom: '20px' }}>🔐 Espace Sécurisé RichTech</h3>
-            
-            {!otpSent ? (
-              <form onSubmit={handleRequestOtp}>
-                <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '15px' }}>Entrez votre e-mail pour recevoir un code de confirmation :</p>
-                <input 
-                  type="email" placeholder="votre.email@gmail.com" value={authEmail} 
-                  onChange={e => setAuthEmail(e.target.value)} 
-                  style={{ ...inputStyle, width: '100%', marginBottom: '15px', boxSizing: 'border-box' }} required 
-                />
-                <button type="submit" style={{
-                  width: '100%', background: '#2563eb', color: '#fff', border: 'none',
-                  padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
-                }}>
-                  Envoyer le code de validation 📩
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyOtp}>
-                <p style={{ color: '#34d399', fontSize: '0.85rem', marginBottom: '15px' }}>Un code a été envoyé à <strong>{authEmail}</strong>. Entrez-le ci-dessous :</p>
-                <input 
-                  type="text" placeholder="Entrez le code à 4 chiffres" value={enteredOtp} 
-                  onChange={e => setEnteredOtp(e.target.value)} 
-                  style={{ ...inputStyle, width: '100%', marginBottom: '15px', boxSizing: 'border-box', textAlign: 'center', letterSpacing: '4px', fontSize: '1.2rem' }} required 
-                />
-                <button type="submit" style={{
-                  width: '100%', background: '#16a34a', color: '#fff', border: 'none',
-                  padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
-                }}>
-                  Confirmer le code ✅
-                </button>
-              </form>
-            )}
-
-            <div style={{ color: '#64748b', margin: '15px 0', fontSize: '0.85rem' }}>--- OU ACCÈS ADMIN ---</div>
-
+            <h3 style={{ color: '#fff', marginBottom: '20px' }}>⚙️ Connexion Administrateur</h3>
             <form onSubmit={handleAdminLogin}>
               <input 
                 type="password" placeholder="Mot de passe Admin" value={adminPassword} 
@@ -249,15 +178,57 @@ export default function App() {
                 style={{ ...inputStyle, width: '100%', marginBottom: '15px', boxSizing: 'border-box' }} required 
               />
               <button type="submit" style={{
-                width: '100%', background: '#334155', color: '#fff', border: 'none',
+                width: '100%', background: '#16a34a', color: '#fff', border: 'none',
                 padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
               }}>
-                Connexion Admin ⚙️
+                Se connecter
+              </button>
+            </form>
+            <button onClick={() => setShowAdminLogin(false)} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+              Fermer ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal du Formulaire de Commande Client */}
+      {selectedProduct && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '20px'
+        }}>
+          <div style={{
+            background: '#0f172a', border: '1px solid rgba(56, 189, 248, 0.4)',
+            borderRadius: '20px', padding: '30px', width: '100%', maxWidth: '450px',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.8)'
+          }}>
+            <h3 style={{ color: '#fff', marginBottom: '10px', fontSize: '1.4rem' }}>🛒 Valider votre commande</h3>
+            <p style={{ color: '#38bdf8', fontSize: '0.95rem', marginBottom: '20px' }}>
+              Produit : <strong>{selectedProduct.title}</strong> (${selectedProduct.price})
+            </p>
+
+            <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <input type="text" placeholder="Nom" value={clientNom} onChange={e => setClientNom(e.target.value)} style={inputStyle} required />
+              <input type="text" placeholder="Prénom" value={clientPrenom} onChange={e => setClientPrenom(e.target.value)} style={inputStyle} required />
+              <input type="email" placeholder="Adresse e-mail" value={clientEmail} onChange={e => setClientEmail(e.target.value)} style={inputStyle} required />
+              <input type="tel" placeholder="Numéro de téléphone" value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={inputStyle} required />
+
+              <button type="submit" style={{
+                background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                color: '#fff', border: 'none', padding: '14px', borderRadius: '10px',
+                fontWeight: '700', fontSize: '1rem', cursor: 'pointer', marginTop: '10px',
+                boxShadow: '0 4px 15px rgba(22, 163, 74, 0.4)'
+              }}>
+                Commander & Notifier l'Admin 🚀
               </button>
             </form>
 
-            <button onClick={() => { setShowAuthModal(false); setOtpSent(false); }} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
-              Fermer ✕
+            <button onClick={() => setSelectedProduct(null)} style={{
+              background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer',
+              marginTop: '15px', width: '100%', textAlign: 'center', fontSize: '0.9rem'
+            }}>
+              Annuler ✕
             </button>
           </div>
         </div>
@@ -293,7 +264,7 @@ export default function App() {
       </header>
 
       {/* Panneau Admin */}
-      {user && user.role === 'admin' && (
+      {isAdmin && (
         <div style={{
           maxWidth: '1100px', margin: '0 auto 40px auto', background: 'rgba(15, 23, 42, 0.95)',
           border: '1px solid rgba(56, 189, 248, 0.4)', borderRadius: '20px', padding: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.6)'
@@ -306,12 +277,12 @@ export default function App() {
             <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyle} />
             <input type="number" placeholder="Prix en $ (ex: 20)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyle} required />
             <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={inputStyle} />
-            <input type="text" placeholder="Lien du fichier (Téléchargement sécurisé)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyle} />
+            <input type="text" placeholder="Lien du fichier (Téléchargement)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyle} />
             <textarea placeholder="Description..." value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyle, gridColumn: '1 / -1', height: '80px' }}></textarea>
             
             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
               <button type="submit" style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>
-                {editingId ? 'Mettre à jour le produit 💾' : 'Publier le produit 🚀'}
+                {editingId ? 'Mettre à jour 💾' : 'Publier 🚀'}
               </button>
               {editingId && (
                 <button type="button" onClick={resetForm} style={{ background: '#475569', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '10px', cursor: 'pointer' }}>
@@ -330,7 +301,7 @@ export default function App() {
             ⚡ Catalogue & Licences Disponibles
           </h3>
           <span style={{ fontSize: '0.85rem', color: '#34d399', background: 'rgba(52, 211, 153, 0.1)', padding: '6px 14px', borderRadius: '20px' }}>
-            ● Service sécurisé
+            ● Service en ligne
           </span>
         </div>
 
@@ -342,7 +313,7 @@ export default function App() {
               borderRadius: '20px', padding: '28px', boxShadow: '0 15px 35px -10px rgba(0, 0, 0, 0.5)',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
             }}>
-              {user && user.role === 'admin' && (
+              {isAdmin && (
                 <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px' }}>
                   <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
                   <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
@@ -376,21 +347,13 @@ export default function App() {
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
-                  <button onClick={() => handleWhatsAppOrder(product)} style={{
-                    background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                    color: '#fff', border: 'none', padding: '11px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer'
-                  }}>
-                    Commander & Payer via WhatsApp 💬
-                  </button>
-
-                  <button onClick={() => handleSecureDownload(product)} style={{
-                    background: 'rgba(255, 255, 255, 0.06)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)',
-                    padding: '10px', borderRadius: '10px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer'
-                  }}>
-                    📥 Télécharger (Réservé après paiement)
-                  </button>
-                </div>
+                <button onClick={() => setSelectedProduct(product)} style={{
+                  width: '100%', background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                  color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)'
+                }}>
+                  Acheter 🛒
+                </button>
               </div>
             </div>
           ))}
@@ -405,6 +368,6 @@ export default function App() {
   );
 }
 
-const inputStyle = { background: '#030712', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '0.9rem', outline: 'none' };
+const inputStyle = { background: '#030712', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
 function authBtnStyle(bg) { return { background: bg, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' }; }
 function socialBtnStyle(color1, color2) { return { background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`, color: '#fff', padding: '11px 22px', borderRadius: '12px', textDecoration: 'none', fontSize: '0.92rem', fontWeight: '600', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }; }
