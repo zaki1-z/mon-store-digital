@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://dsgrbhofkappxpuimkg.supabase.co';
+// URL exacte tirée de ta capture d'écran Supabase
+const supabaseUrl = 'https://dsgrbhofkappxpxuimkg.supabase.co';
 const supabaseKey = 'sb_publishable_HuoDWYkQYegythDbrvV1gw_dBc0rkCy';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -18,6 +19,8 @@ export default function App() {
       const { data, error } = await supabase.from('products').select('*');
       if (!error && data) {
         setProducts(data);
+      } else {
+        console.error('Erreur :', error);
       }
     } catch (err) {
       console.error(err);
@@ -109,7 +112,7 @@ export default function App() {
           <p style={{ textAlign: 'center', color: '#94a3b8', padding: '50px' }}>Chargement du catalogue...</p>
         ) : products.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit disponible pour le moment. Ajoutez vos articles dans votre base de données !</p>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit disponible pour le moment.</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
