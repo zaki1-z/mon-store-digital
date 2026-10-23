@@ -114,7 +114,7 @@ export default function App() {
     }
   };
 
-  // Validation de la commande avec ton vrai numéro WhatsApp (+212 602-784528)
+  // Validation de la commande avec le vrai numéro +212 602-784528
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
     if (!clientNom || !clientPrenom || !clientEmail || !clientPhone) {
@@ -124,10 +124,12 @@ export default function App() {
     const whatsappNumber = "212602784528"; 
 
     const textMessage = encodeURIComponent(
-      `🚨 NOUVELLE COMMANDE - RichTech Maroc\n\n` +
-      `📦 Produit : ${selectedProduct.title}\n` + `💰 Prix : $${selectedProduct.price}\n\n` +
-      `👤 Nom : ${clientNom}${clientPrenom}\n` +
-      `📧 E-mail : ${clientEmail}\n` + `📞 Téléphone : ${clientPhone}\n\n` +
+      `NOUVELLE COMMANDE - RichTech Maroc\n\n` +
+      `Produit : ${selectedProduct.title}\n` +
+      `Prix : $${selectedProduct.price}\n\n` +
+      `Nom : ${clientNom} ${clientPrenom}\n` +
+      `E-mail : ${clientEmail}\n` +
+      `Téléphone : ${clientPhone}\n\n` +
       `Merci de valider ma commande !`
     );
 
@@ -359,4 +361,4 @@ export default function App() {
 
 const inputStyle = { background: '#030712', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
 function authBtnStyle(bg) { return { background: bg, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' }; }
-function socialBtnStyle(color1, color2) { return { background: `linear-gradient(135deg, ${color1} 0\%,${color2} 100%)
+function socialBtnStyle(color1, color2) { return { background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`, color: '#fff', padding: '11px 22px', borderRadius: '12px', textDecoration: 'none', fontSize: '0.92rem', fontWeight: '600', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }; }
