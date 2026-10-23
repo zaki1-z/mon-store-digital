@@ -1,43 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import React from 'react';
 
-const supabaseUrl = 'https://dsgrbhofkappxpuimkg.supabase.co';
-const supabaseKey = 'sb_publishable_HuoDWYkQYegythDbrvV1gw_dBc0rkCy';
-
-// Initialisation sécurisée avec options réseau
-const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: { persistSession: false },
-  global: { headers: { 'x-client-info': 'richtech-maroc-store' } }
-});
+// Ton catalogue officiel RichTech Maroc (Modifiable à tout moment ici)
+const products = [
+  {
+    id: '1',
+    title: 'Licence Windows 11 Pro (À vie)',
+    category: 'Logiciel Officiel',
+    description: 'Activation officielle et définitive pour 1 PC. Mises à jour incluses.',
+    price: 15,
+    file_url: 'https://example.com/telechargement-windows.pdf'
+  },
+  {
+    id: '2',
+    title: 'Microsoft Office 2021 Pro Plus',
+    category: 'Bureautique',
+    description: 'Word, Excel, PowerPoint, Outlook. Clé officielle liée à votre compte.',
+    price: 25,
+    file_url: 'https://example.com/telechargement-office.pdf'
+  },
+  {
+    id: '3',
+    title: 'Antivirus Kaspersky Total Security',
+    category: 'Cybersécurité',
+    description: 'Protection maximale contre les malwares et ransomwares pour 1 an / 1 Appareil.',
+    price: 20,
+    file_url: 'https://example.com/telechargement-kaspersky.pdf'
+  },
+  {
+    id: '4',
+    title: 'Abonnement IPTV Premium (12 Mois)',
+    category: 'Streaming IPTV',
+    description: 'Plus de 40 000 chaînes en HD/4K, films et séries mis à jour quotidiennement. Anti-coupure.',
+    price: 45,
+    file_url: 'https://example.com/acces-iptv.pdf'
+  },
+  {
+    id: '5',
+    title: 'Kit Caméras de Surveillance CCTV Pro',
+    category: 'Sécurité & Matériel',
+    description: 'Installation et configuration de caméras HD avec vision nocturne et accès smartphone à distance.',
+    price: 120,
+    file_url: ''
+  }
+];
 
 export default function App() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [dbError, setDbError] = useState(null);
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  async function fetchProducts() {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.from('products').select('*');
-      if (error) {
-        setDbError(error.message);
-      } else {
-        setProducts(data || []);
-      }
-    } catch (err) {
-      setDbError(err.message || 'Erreur réseau inattendue');
-    }
-    setLoading(false);
-  }
 
   const handleWhatsAppOrder = (product) => {
-    const title = product.title || product.name || 'Produit Numérique';
-    const price = product.price || '0';
-    const message = encodeURIComponent(`Bonjour RichTech Maroc 👋, je souhaite commander :\n\n📌 *${title}*\n💰 Prix : $${price}\n\nComment procéder au paiement ?`);
+    const message = encodeURIComponent(`Bonjour RichTech Maroc 👋, je souhaite commander :\n\n📌 *${product.title}*\n💰 Prix : $${product.price}\n\nComment procéder au paiement ?`);
     window.open(`https://wa.me/message/OHTL6X7NT4P7C1?text=${message}`, '_blank');
   };
 
@@ -58,7 +68,7 @@ export default function App() {
       padding: '40px 20px',
       overflowX: 'hidden'
     }}>
-      {/* En-tête RichTech Maroc */}
+      {/* En-tête / Branding RichTech Maroc */}
       <header style={{ maxWidth: '1100px', margin: '0 auto 50px auto', textAlign: 'center' }}>
         <div style={{
           display: 'inline-flex',
@@ -103,7 +113,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Catalogue Client */}
+      {/* Catalogue Client Épuré */}
       <main style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '15px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#f3f4f6' }}>
@@ -114,97 +124,78 @@ export default function App() {
           </span>
         </div>
 
-        {loading ? (
-          <p style={{ textAlign: 'center', color: '#94a3b8', padding: '50px' }}>Chargement du catalogue...</p>
-        ) : dbError ? (
-          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '20px', borderRadius: '12px', color: '#fca5a5', textAlign: 'center' }}>
-            <p style={{ fontWeight: '700', margin: '0 0 8px 0' }}>Problème de connexion :</p>
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>{dbError}</p>
-          </div>
-        ) : products.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit disponible pour le moment.</p>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
-            {products.map((product) => (
-              <div key={product.id} style={{
-                background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.6) 100%)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '20px',
-                padding: '28px',
-                boxShadow: '0 15px 35px -10px rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}>
-                <div>
-                  {product.image_url && (
-                    <div style={{ width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#1e293b' }}>
-                      <img src={product.image_url} alt={product.title || product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
-                  )}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
+          {products.map((product) => (
+            <div key={product.id} style={{
+              background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.6) 100%)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '20px',
+              padding: '28px',
+              boxShadow: '0 15px 35px -10px rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}>
+              <div>
+                <span style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                  {product.category}
+                </span>
+                
+                <h4 style={{ fontSize: '1.35rem', fontWeight: '700', margin: '14px 0 10px 0', color: '#ffffff' }}>
+                  {product.title}
+                </h4>
+                
+                <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 24px 0' }}>
+                  {product.description}
+                </p>
+              </div>
 
-                  <span style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
-                    {product.category || 'Solution Pro'}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '18px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '1.8rem', fontWeight: '800', color: '#34d399' }}>
+                    ${product.price}
                   </span>
-                  
-                  <h4 style={{ fontSize: '1.35rem', fontWeight: '700', margin: '14px 0 10px 0', color: '#ffffff' }}>
-                    {product.title || product.name || 'Produit'}
-                  </h4>
-                  
-                  <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 24px 0' }}>
-                    {product.description || "Solution professionnelle certifiée RichTech Maroc."}
-                  </p>
                 </div>
 
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '18px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '1.8rem', fontWeight: '800', color: '#34d399' }}>
-                      ${product.price || '0'}
-                    </span>
-                  </div>
+                <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                  <button 
+                    onClick={() => handleWhatsAppOrder(product)}
+                    style={{
+                      background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                      color: '#fff',
+                      border: 'none',
+                      padding: '11px',
+                      borderRadius: '10px',
+                      fontWeight: '600',
+                      fontSize: '0.9rem',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)',
+                    }}
+                  >
+                    Commander via WhatsApp 💬
+                  </button>
 
-                  <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
-                    <button 
-                      onClick={() => handleWhatsAppOrder(product)}
-                      style={{
-                        background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                        color: '#fff',
-                        border: 'none',
-                        padding: '11px',
-                        borderRadius: '10px',
-                        fontWeight: '600',
-                        fontSize: '0.9rem',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)',
-                      }}
-                    >
-                      Commander via WhatsApp 💬
-                    </button>
-
-                    <button 
-                      onClick={() => handleDownloadOrContact(product)}
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.06)',
-                        color: '#38bdf8',
-                        border: '1px solid rgba(56, 189, 248, 0.3)',
-                        padding: '10px',
-                        borderRadius: '10px',
-                        fontWeight: '600',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      📥 Télécharger après validation
-                    </button>
-                  </div>
+                  <button 
+                    onClick={() => handleDownloadOrContact(product)}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      color: '#38bdf8',
+                      border: '1px solid rgba(56, 189, 248, 0.3)',
+                      padding: '10px',
+                      borderRadius: '10px',
+                      fontWeight: '600',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    📥 Télécharger après validation
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </main>
 
       {/* Footer Pro */}
