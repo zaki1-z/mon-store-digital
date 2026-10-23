@@ -8,22 +8,19 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
-    fetchProductsFromDB();
+    fetchProducts();
   }, []);
 
-  async function fetchProductsFromDB() {
+  async function fetchProducts() {
     try {
       const { data, error } = await supabase.from('products').select('*');
-      if (error) {
-        setErrorMessage(error.message);
-      } else {
-        setProducts(data || []);
+      if (!error && data) {
+        setProducts(data);
       }
     } catch (err) {
-      setErrorMessage(err.message);
+      console.error(err);
     }
     setLoading(false);
   }
@@ -33,12 +30,10 @@ export default function App() {
     window.open(`https://wa.me/message/OHTL6X7NT4P7C1?text=${message}`, '_blank');
   };
 
-  const handleDirectDownloadOrPay = (product) => {
+  const handleDownloadOrContact = (product) => {
     if (product.file_url && product.file_url.startsWith('http')) {
-      // Si un lien de téléchargement direct est configuré dans la DB après validation du paiement
       window.open(product.file_url, '_blank');
     } else {
-      alert(`Pour acquérir "${product.title}", veuillez nous contacter directement sur WhatsApp Business pour valider le paiement.`);
       handleWhatsAppOrder(product);
     }
   };
@@ -52,7 +47,7 @@ export default function App() {
       padding: '40px 20px',
       overflowX: 'hidden'
     }}>
-      {/* En-tête RichTech Maroc */}
+      {/* En-tête / Branding RichTech Maroc */}
       <header style={{ maxWidth: '1100px', margin: '0 auto 50px auto', textAlign: 'center' }}>
         <div style={{
           display: 'inline-flex',
@@ -61,7 +56,7 @@ export default function App() {
           background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
           border: '1px solid rgba(56, 189, 248, 0.3)',
           borderRadius: '24px',
-          padding: '24px 40px',
+          padding: '22px 35px',
           boxShadow: '0 20px 40px -15px rgba(56, 189, 248, 0.15)',
           marginBottom: '25px'
         }}>
@@ -97,28 +92,22 @@ export default function App() {
         </div>
       </header>
 
-      {/* Catalogue dynamique depuis Supabase */}
+      {/* Catalogue Client Épuré */}
       <main style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '15px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#f3f4f6' }}>
-            ⚡ Catalogue des Produits (Base de données)
+            ⚡ Catalogue & Licences Disponibles
           </h3>
-          <span style={{ fontSize: '0.85rem', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
-            En direct de Supabase 🔒
+          <span style={{ fontSize: '0.85rem', color: '#34d399', background: 'rgba(52, 211, 153, 0.1)', padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(52, 211, 153, 0.2)' }}>
+            ● Service en ligne
           </span>
         </div>
 
         {loading ? (
-          <p style={{ textAlign: 'center', color: '#94a3b8', padding: '50px' }}>Chargement des produits depuis la base de données...</p>
-        ) : errorMessage ? (
-          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '20px', borderRadius: '12px', color: '#fca5a5', textAlign: 'center' }}>
-            <p style={{ fontWeight: '700', margin: '0 0 8px 0' }}>Erreur de chargement :</p>
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>{errorMessage}</p>
-          </div>
+          <p style={{ textAlign: 'center', color: '#94a3b8', padding: '50px' }}>Chargement du catalogue...</p>
         ) : products.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-            <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '15px' }}>Aucun produit dans votre base de données pour le moment.</p>
-            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Ajoutez des lignes dans votre table <code style={{ color: '#38bdf8' }}>products</code> sur Supabase pour les voir apparaître ici instantanément !</p>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit disponible pour le moment. Revenez très bientôt !</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
@@ -127,7 +116,7 @@ export default function App() {
                 background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.6) 100%)',
                 backdropFilter: 'blur(20px)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '20px5px',
+                borderRadius: '20px',
                 padding: '28px',
                 boxShadow: '0 15px 35px -10px rgba(0, 0, 0, 0.5)',
                 display: 'flex',
@@ -135,7 +124,6 @@ export default function App() {
                 justifyContent: 'space-between',
               }}>
                 <div>
-                  {/* Image du produit si elle existe dans la DB */}
                   {product.image_url && (
                     <div style={{ width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#1e293b' }}>
                       <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -177,11 +165,11 @@ export default function App() {
                         boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)',
                       }}
                     >
-                      Commander & Payer via WhatsApp 💬
+                      Commander via WhatsApp 💬
                     </button>
 
                     <button 
-                      onClick={() => handleDirectDownloadOrPay(product)}
+                      onClick={() => handleDownloadOrContact(product)}
                       style={{
                         background: 'rgba(255, 255, 255, 0.06)',
                         color: '#38bdf8',
@@ -203,7 +191,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer */}
+      {/* Footer Pro */}
       <footer style={{ textAlign: 'center', marginTop: '90px', color: '#64748b', fontSize: '0.9rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '25px' }}>
         <p style={{ margin: '0 0 5px 0', color: '#94a3b8', fontWeight: '500' }}>RichTech Maroc • Solutions Informatiques & Sécurité</p>
         <p style={{ margin: 0 }}>© 2026 Tous droits réservés.</p>
