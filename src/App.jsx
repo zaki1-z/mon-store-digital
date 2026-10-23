@@ -3,7 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://dsgrbhofkappxpuimkg.supabase.co';
 const supabaseKey = 'sb_publishable_HuoDWYkQYegythDbrvV1gw_dBc0rkCy';
-const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Initialisation sécurisée avec options réseau
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: { persistSession: false },
+  global: { headers: { 'x-client-info': 'richtech-maroc-store' } }
+});
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -16,6 +21,7 @@ export default function App() {
 
   async function fetchProducts() {
     try {
+      setLoading(true);
       const { data, error } = await supabase.from('products').select('*');
       if (error) {
         setDbError(error.message);
@@ -23,7 +29,7 @@ export default function App() {
         setProducts(data || []);
       }
     } catch (err) {
-      setDbError(err.message);
+      setDbError(err.message || 'Erreur réseau inattendue');
     }
     setLoading(false);
   }
@@ -117,8 +123,7 @@ export default function App() {
           </div>
         ) : products.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit trouvé dans la table <code style={{ color: '#38bdf8' }}>products</code>.</p>
-            <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Vérifie que tu as bien inséré des lignes dans ton tableau Supabase.</p>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit disponible pour le moment.</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
