@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-// Ton lien CSV direct de Google Sheets publié sur le web
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fysf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
 
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // États du formulaire de commande client
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [clientNom, setClientNom] = useState('');
   const [clientPrenom, setClientPrenom] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // Charger et parser le CSV en direct
   useEffect(() => {
     fetch(CSV_URL)
       .then((res) => res.text())
@@ -22,12 +19,10 @@ export default function App() {
         const lines = csvText.split('\n');
         const parsedProducts = [];
 
-        // On commence à la ligne 1 pour ignorer les en-têtes (ligne 0)
         for (let i = 1; i < lines.length; i++) {
           const line = lines[i].trim();
           if (!line) continue;
 
-          // Découpage intelligent gérant les virgules dans les guillemets
           const row = [];
           let inQuotes = false;
           let currentVal = '';
@@ -44,7 +39,6 @@ export default function App() {
           }
           row.push(currentVal.trim());
 
-          // row correspond à [id, title, category, description, price, image_url]
           if (row.length >= 2 && row[1]) {
             parsedProducts.push({
               id: row[0] || i.toString(),
@@ -61,7 +55,7 @@ export default function App() {
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Erreur lecture CSV Google Sheets :', err);
+        console.error('Erreur lecture Google Sheets :', err);
         setLoading(false);
       });
   }, []);
@@ -98,7 +92,6 @@ export default function App() {
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
     }}>
-      {/* Modal Formulaire Commande Client */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -141,7 +134,6 @@ export default function App() {
         </div>
       )}
 
-      {/* En-tête / Style Instagram Pro */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         <div style={{
           width: '130px', height: '130px', margin: '0 auto 20px auto',
@@ -168,15 +160,11 @@ export default function App() {
         </p>
       </header>
 
-      {/* Catalogue Public */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
             ⚡ Catalogue & Licences Disponibles
           </h3>
-          <span style={{ fontSize: '0.85rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '600' }}>
-            ● Google Sheets Direct
-          </span>
         </div>
 
         {loading ? (
@@ -220,49 +208,4 @@ export default function App() {
                   </div>
 
                   <button onClick={() => setSelectedProduct(product)} style={{
-                    width: '100%', background: '#0f172a',
-                    color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
-                  }}>
-                    Acheter 🛒
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
-
-      <footer style={{
-        maxWidth: '1350px', margin: '80px auto 0 auto', background: '#ffffff',
-        border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px 30px',
-        textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
-      }}>
-        <h4 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
-          RichTech Maroc • Solutions Informatiques & Sécurité
-        </h4>
-        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '25px' }}>
-          Contactez-nous directement sur nos réseaux officiels :
-        </p>
-
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
-          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
-          <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
-          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
-        </div>
-
-        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 RichTech Maroc. Tous droits réservés.</p>
-      </footer>
-    </div>
-  );
-}
-
-const inputStyleLight = { background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', color: '#0f172a', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
-function socialBtnStyle(color1, color2) {
-  return {
-    background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
-    color: '#fff', padding: '11px 22px', borderRadius: '12px',
-    textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-  };
-}
+                    width: '100%', background: '#0f172
