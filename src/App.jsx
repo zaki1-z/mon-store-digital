@@ -6,7 +6,7 @@ const initialProducts = [
     title: 'Licence Windows 11 Pro (À vie)',
     category: 'Logiciel Officiel',
     description: 'Activation officielle et définitive pour 1 PC. Mises à jour incluses.',
-    price: 15,
+    price: 150,
     image_url: 'https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=500&auto=format&fit=crop&q=60',
     file_url: 'https://example.com/windows-pro.pdf'
   },
@@ -15,7 +15,7 @@ const initialProducts = [
     title: 'Microsoft Office 2021 Pro Plus',
     category: 'Bureautique',
     description: 'Word, Excel, PowerPoint, Outlook. Clé officielle liée à votre compte.',
-    price: 25,
+    price: 250,
     image_url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&auto=format&fit=crop&q=60',
     file_url: 'https://example.com/office-2021.pdf'
   }
@@ -114,7 +114,7 @@ export default function App() {
     }
   };
 
-  // Validation de la commande avec le vrai numéro +212 602-784528
+  // Validation de la commande en DH avec ton numéro WhatsApp
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
     if (!clientNom || !clientPrenom || !clientEmail || !clientPhone) {
@@ -126,7 +126,7 @@ export default function App() {
     const textMessage = encodeURIComponent(
       `NOUVELLE COMMANDE - RichTech Maroc\n\n` +
       `Produit : ${selectedProduct.title}\n` +
-      `Prix : $${selectedProduct.price}\n\n` +
+      `Prix : ${selectedProduct.price} DH\n\n` +
       `Nom : ${clientNom} ${clientPrenom}\n` +
       `E-mail : ${clientEmail}\n` +
       `Téléphone : ${clientPhone}\n\n` +
@@ -199,7 +199,7 @@ export default function App() {
           }}>
             <h3 style={{ color: '#fff', marginBottom: '10px', fontSize: '1.4rem' }}>🛒 Valider votre commande</h3>
             <p style={{ color: '#38bdf8', fontSize: '0.95rem', marginBottom: '20px' }}>
-              Produit : <strong>{selectedProduct.title}</strong> (${selectedProduct.price})
+              Produit : <strong>{selectedProduct.title}</strong> ({selectedProduct.price} DH)
             </p>
 
             <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -267,7 +267,7 @@ export default function App() {
           <form onSubmit={handleSaveProduct} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
             <input type="text" placeholder="Nom du produit" value={title} onChange={e => setTitle(e.target.value)} style={inputStyle} required />
             <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyle} />
-            <input type="number" placeholder="Prix en $ (ex: 20)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyle} required />
+            <input type="number" placeholder="Prix en DH (ex: 150)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyle} required />
             <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={inputStyle} />
             <input type="text" placeholder="Lien du fichier (Téléchargement)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyle} />
             <textarea placeholder="Description..." value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyle, gridColumn: '1 / -1', height: '80px' }}></textarea>
@@ -334,7 +334,7 @@ export default function App() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '18px', marginBottom: '12px' }}>
                   <span style={{ fontSize: '1.8rem', fontWeight: '800', color: '#34d399' }}>
-                    ${product.price}
+                    {product.price} DH
                   </span>
                 </div>
 
