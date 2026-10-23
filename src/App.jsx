@@ -114,15 +114,14 @@ export default function App() {
     }
   };
 
-  // Validation de la commande avec lien WhatsApp direct optimisé
+  // Validation de la commande avec ton vrai numéro WhatsApp (+212602784528)
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
     if (!clientNom || !clientPrenom || !clientEmail || !clientPhone) {
       return alert("Veuillez remplir tous les champs du formulaire.");
     }
 
-    // Numéro WhatsApp direct de RichTech (format international sans le +)
-    const whatsappNumber = "212600000000"; // Remplacer par ton vrai numéro WhatsApp Business si besoin, ou garde ton lien direct
+    const whatsappNumber = "212602784528"; 
 
     const textMessage = encodeURIComponent(
       `🚨 NOUVELLE COMMANDE - RichTech Maroc\n\n` +
@@ -134,7 +133,6 @@ export default function App() {
       `Merci de valider ma commande !`
     );
 
-    // Utilisation directe du lien universel WhatsApp
     window.open(`https://wa.me/${whatsappNumber}?text=${textMessage}`, '_blank');
 
     setSelectedProduct(null);
@@ -254,7 +252,7 @@ export default function App() {
         <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
           <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
           <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
-          <a href="https://wa.me/message/OHTL6X7NT4P7C1" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp Business</a>
+          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp Business</a>
         </div>
       </header>
 
@@ -354,13 +352,4 @@ export default function App() {
       </main>
 
       <footer style={{ textAlign: 'center', marginTop: '90px', color: '#64748b', fontSize: '0.9rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '25px' }}>
-        <p style={{ margin: '0 0 5px 0', color: '#94a3b8', fontWeight: '500' }}>RichTech Maroc • Solutions Informatiques & Sécurité</p>
-        <p style={{ margin: 0 }}>© 2026 Tous droits réservés.</p>
-      </footer>
-    </div>
-  );
-}
-
-const inputStyle = { background: '#030712', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
-function authBtnStyle(bg) { return { background: bg, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' }; }
-function socialBtnStyle(color1, color2) { return { background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`, color: '#fff', padding: '11px 22px', borderRadius: '12px', textDecoration: 'none', fontSize: '0.92rem', fontWeight: '600', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }; }
+        <p style={{ margin: '0 0 5px 0', color: '#94a3b8', fontWeight:
