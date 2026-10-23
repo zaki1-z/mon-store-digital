@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-// Lien CSV de ton Google Sheet
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pI2pgy_yIHrCeNWm07SaS6XkH2Fsf9JloE1BGq-WYh5-OyyCu8YyFt89WjDdhzL5CI_/pub?output=csv';
+// URL de l'API JSON publique de ton Google Sheet (basée sur ton ID de document)
+const SPREADSHEET_ID = '168-meiLEI72HbPdlYpXOev_05ziUv_RyNhDWJ3thrNM';
+const SHEET_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/Feuille 1`;
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -14,43 +15,26 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // Charger et convertir le CSV de Google Sheets en objets JavaScript
+  // Charger les données proprement depuis l'API JSON de Google Sheets
   useEffect(() => {
-    fetch(SHEET_CSV_URL)
-      .then((res) => res.text())
-      .then((csvText) => {
-        const rows = csvText.split('\n').map(row => {
-          // Gestion basique du découpage CSV
-          return row.split(',').map(val => val.trim().replace(/^"(.*)"$/, '$1'));
-        });
-
-        if (rows.length < 2) {
-          setLoading(false);
-          return;
+    fetch(SHEET_URL)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const formattedProducts = data.map((item, index) => ({
+            id: item.id || index.toString(),
+            title: item.title || 'Produit sans nom',
+            category: item.category || 'Solution Pro',
+            description: item.description || 'Solution professionnelle certifiée RichTech Maroc.',
+            price: Number(item.price) || 0,
+            image_url: item.image_url || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
+          }));
+          setProducts(formattedProducts);
         }
-
-        const headers = rows[0]; // ['id', 'title', 'category', 'description', 'price', 'image_url']
-        const parsedProducts = [];
-
-        for (let i = 1; i < rows.length; i++) {
-          const values = rows[i];
-          if (values.length >= headers.length && values[1]) {
-            parsedProducts.push({
-              id: values[0] || i.toString(),
-              title: values[1] || '',
-              category: values[2] || 'Solution Pro',
-              description: values[3] || 'Solution professionnelle certifiée RichTech Maroc.',
-              price: Number(values[4]) || 0,
-              image_url: values[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
-            });
-          }
-        }
-
-        setProducts(parsedProducts);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Erreur chargement Google Sheet :', err);
+        console.error('Erreur chargement Google Sheet JSON :', err);
         setLoading(false);
       });
   }, []);
@@ -164,7 +148,7 @@ export default function App() {
             ⚡ Catalogue & Licences Disponibles
           </h3>
           <span style={{ fontSize: '0.85rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '600' }}>
-            ● Connecté à Google Sheets
+            ● Google Sheets Connecté
           </span>
         </div>
 
