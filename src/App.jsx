@@ -16,17 +16,21 @@ export default function App() {
   async function fetchProducts() {
     try {
       const { data, error } = await supabase.from('products').select('*');
-      if (!error && data) {
+      if (error) {
+        console.error('Erreur Supabase :', error.message);
+      } else if (data) {
         setProducts(data);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Erreur :', err);
     }
     setLoading(false);
   }
 
   const handleWhatsAppOrder = (product) => {
-    const message = encodeURIComponent(`Bonjour RichTech Maroc 👋, je souhaite commander ce produit :\n\n📌 *${product.title}*\n💰 Prix : $${product.price}\n\nComment procéder au paiement ?`);
+    const title = product.title || product.name || 'Produit Numérique';
+    const price = product.price || '0';
+    const message = encodeURIComponent(`Bonjour RichTech Maroc 👋, je souhaite commander :\n\n📌 *${title}*\n💰 Prix : $${price}\n\nComment procéder au paiement ?`);
     window.open(`https://wa.me/message/OHTL6X7NT4P7C1?text=${message}`, '_blank');
   };
 
@@ -47,7 +51,7 @@ export default function App() {
       padding: '40px 20px',
       overflowX: 'hidden'
     }}>
-      {/* En-tête / Branding RichTech Maroc */}
+      {/* En-tête RichTech Maroc */}
       <header style={{ maxWidth: '1100px', margin: '0 auto 50px auto', textAlign: 'center' }}>
         <div style={{
           display: 'inline-flex',
@@ -126,7 +130,7 @@ export default function App() {
                 <div>
                   {product.image_url && (
                     <div style={{ width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#1e293b' }}>
-                      <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={product.image_url} alt={product.title || product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   )}
 
@@ -135,7 +139,7 @@ export default function App() {
                   </span>
                   
                   <h4 style={{ fontSize: '1.35rem', fontWeight: '700', margin: '14px 0 10px 0', color: '#ffffff' }}>
-                    {product.title}
+                    {product.title || product.name || 'Produit'}
                   </h4>
                   
                   <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 24px 0' }}>
@@ -146,7 +150,7 @@ export default function App() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '18px', marginBottom: '12px' }}>
                     <span style={{ fontSize: '1.8rem', fontWeight: '800', color: '#34d399' }}>
-                      ${product.price}
+                      ${product.price || '0'}
                     </span>
                   </div>
 
