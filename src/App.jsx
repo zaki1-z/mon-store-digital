@@ -51,7 +51,6 @@ export default function App() {
     localStorage.setItem('richtech_products', JSON.stringify(products));
   }, [products]);
 
-  // Connexion Admin
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (adminPassword === 'richtech2026') {
@@ -115,34 +114,34 @@ export default function App() {
     }
   };
 
-  // Validation de la commande et notification WhatsApp instantanée vers l'Admin
+  // Validation de la commande avec lien WhatsApp direct optimisé
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
     if (!clientNom || !clientPrenom || !clientEmail || !clientPhone) {
       return alert("Veuillez remplir tous les champs du formulaire.");
     }
 
-    // Construction du message de notification pour l'Admin sur WhatsApp
-    const adminMessage = encodeURIComponent(
-      `🚨 *NOUVELLE COMMANDE - RichTech Maroc*\n\n` +
-      `📦 *Produit :* ${selectedProduct.title}\n` +
-      `💰 *Prix :* $${selectedProduct.price}\n\n` +
-      `👤 *Client :* ${clientPrenom} ${clientNom}\n` +
-      `📧 *E-mail :* ${clientEmail}\n` +
-      `📞 *Téléphone :* ${clientPhone}\n\n` +
-      `Merci de traiter cette commande rapidement !`
+    // Numéro WhatsApp direct de RichTech (format international sans le +)
+    const whatsappNumber = "212600000000"; // Remplacer par ton vrai numéro WhatsApp Business si besoin, ou garde ton lien direct
+
+    const textMessage = encodeURIComponent(
+      `🚨 NOUVELLE COMMANDE - RichTech Maroc\n\n` +
+      `📦 Produit : ${selectedProduct.title}\n` +
+      `💰 Prix : $${selectedProduct.price}\n\n` +
+      `👤 Nom : ${clientNom} ${clientPrenom}\n` +
+      `📧 E-mail : ${clientEmail}\n` +
+      `📞 Téléphone : ${clientPhone}\n\n` +
+      `Merci de valider ma commande !`
     );
 
-    // Redirige l'administrateur/client vers WhatsApp avec la notification pré-remplie
-    window.open(`https://wa.me/message/OHTL6X7NT4P7C1?text=${adminMessage}`, '_blank');
+    // Utilisation directe du lien universel WhatsApp
+    window.open(`https://wa.me/${whatsappNumber}?text=${textMessage}`, '_blank');
 
-    // Réinitialisation
     setSelectedProduct(null);
     setClientNom('');
     setClientPrenom('');
     setClientEmail('');
     setClientPhone('');
-    alert("Commande enregistrée ! Vous allez être redirigé vers WhatsApp pour notifier l'administrateur.");
   };
 
   return (
@@ -150,7 +149,6 @@ export default function App() {
       minHeight: '100vh', background: '#030712', color: '#f9fafb',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '40px 20px', overflowX: 'hidden'
     }}>
-      {/* Barre supérieure Admin */}
       <div style={{ maxWidth: '1100px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         {isAdmin ? (
           <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
@@ -159,7 +157,6 @@ export default function App() {
         )}
       </div>
 
-      {/* Modal de connexion Admin */}
       {showAdminLogin && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -191,7 +188,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal du Formulaire de Commande Client */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -220,7 +216,7 @@ export default function App() {
                 fontWeight: '700', fontSize: '1rem', cursor: 'pointer', marginTop: '10px',
                 boxShadow: '0 4px 15px rgba(22, 163, 74, 0.4)'
               }}>
-                Commander & Notifier l'Admin 🚀
+                Envoyer la commande sur WhatsApp 🚀
               </button>
             </form>
 
@@ -234,7 +230,6 @@ export default function App() {
         </div>
       )}
 
-      {/* En-tête / Branding RichTech Maroc */}
       <header style={{ maxWidth: '1100px', margin: '0 auto 50px auto', textAlign: 'center' }}>
         <div style={{
           display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
@@ -263,7 +258,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Panneau Admin */}
       {isAdmin && (
         <div style={{
           maxWidth: '1100px', margin: '0 auto 40px auto', background: 'rgba(15, 23, 42, 0.95)',
@@ -294,7 +288,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Catalogue Public */}
       <main style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '15px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#f3f4f6' }}>
