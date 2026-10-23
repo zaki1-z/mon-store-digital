@@ -1,31 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-const initialProducts = [
-  {
-    id: '1',
-    title: 'Licence Windows 11 Pro (À vie)',
-    category: 'Logiciel Officiel',
-    description: 'Activation officielle et définitive pour 1 PC. Mises à jour incluses.',
-    price: 150,
-    image_url: 'https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=500&auto=format&fit=crop&q=60',
-    file_url: 'https://example.com/windows-pro.pdf'
-  },
-  {
-    id: '2',
-    title: 'Microsoft Office 2021 Pro Plus',
-    category: 'Bureautique',
-    description: 'Word, Excel, PowerPoint, Outlook. Clé officielle liée à votre compte.',
-    price: 250,
-    image_url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&auto=format&fit=crop&q=60',
-    file_url: 'https://example.com/office-2021.pdf'
-  }
-];
+const supabaseUrl = 'https://dsgrbhofkappxpuimkg.supabase.co';
+const supabaseKey = 'sb_publishable_HuoDWYkQYegythDbrvV1gw_dBc0rkCy';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function App() {
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('richtech_products');
-    return saved ? JSON.parse(saved) : initialProducts;
-  });
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -38,18 +20,28 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // États du formulaire Admin (Ajout / Modif)
+  // États du formulaire Admin (sans file_url)
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [image_url, setImage_url] = useState('');
-  const [file_url, setFile_url] = useState('');
 
   useEffect(() => {
-    localStorage.setItem('richtech_products', JSON.stringify(products));
-  }, [products]);
+    fetchProducts();
+  }, []);
+
+  async function fetchProducts() {
+    setLoading(true);
+    const { data, error } = await supabase.from('products').select('*');
+    if (error) {
+      console.error('Erreur de chargement :', error.message);
+    } else {
+      setProducts(data || []);
+    }
+    setLoading(false);
+  }
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -69,30 +61,48 @@ export default function App() {
   };
 
   const resetForm = () => {
-    setTitle(''); setCategory(''); setDescription(''); setPrice(''); setImage_url(''); setFile_url(''); setEditingId(null);
+    setTitle(''); setCategory(''); setDescription(''); setPrice(''); setImage_url(''); setEditingId(null);
   };
 
-  const handleSaveProduct = (e) => {
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!title || !price) return alert("Le nom et le prix sont obligatoires !");
 
     if (editingId) {
-      setProducts(products.map(p => p.id === editingId ? {
-        ...p, title, category: category || 'Solution Pro', description, price: Number(price), image_url, file_url
-      } : p));
-      alert('Produit modifié avec succès !');
+      const { error } = await supabase
+        .from('products')
+        .update({
+          title,
+          category: category || 'Solution Pro',
+          description: description || 'Solution professionnelle certifiée RichTech Maroc.',
+          price: Number(price),
+          image_url
+        })
+        .eq('id', editingId);
+
+      if (error) {
+        alert('Erreur lors de la modification : ' + error.message);
+      } else {
+        alert('Produit modifié avec succès !');
+        fetchProducts();
+      }
     } else {
       const newProduct = {
-        id: Date.now().toString(),
         title,
         category: category || 'Solution Pro',
         description: description || 'Solution professionnelle certifiée RichTech Maroc.',
         price: Number(price),
-        image_url: image_url || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60',
-        file_url
+        image_url: image_url || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
       };
-      setProducts([newProduct, ...products]);
-      alert('Produit ajouté avec succès !');
+
+      const { error } = await supabase.from('products').insert([newProduct]);
+
+      if (error) {
+        alert('Erreur lors de l’ajout : ' + error.message);
+      } else {
+        alert('Produit ajouté avec succès !');
+        fetchProducts();
+      }
     }
     resetForm();
   };
@@ -104,13 +114,17 @@ export default function App() {
     setDescription(product.description);
     setPrice(product.price);
     setImage_url(product.image_url);
-    setFile_url(product.file_url);
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = async (id) => {
     if (confirm('Voulez-vous vraiment supprimer ce produit ?')) {
-      setProducts(products.filter(p => p.id !== id));
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) {
+        alert('Erreur lors de la suppression : ' + error.message);
+      } else {
+        fetchProducts();
+      }
     }
   };
 
@@ -146,7 +160,6 @@ export default function App() {
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
     }}>
-      {/* Barre supérieure Admin */}
       <div style={{ maxWidth: '1350px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         {isAdmin ? (
           <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
@@ -155,7 +168,6 @@ export default function App() {
         )}
       </div>
 
-      {/* Modal Connexion Admin */}
       {showAdminLogin && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -188,7 +200,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal Formulaire Commande Client */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -231,10 +242,7 @@ export default function App() {
         </div>
       )}
 
-      {/* En-tête / Style Instagram Pro (Élargi et sans boutons sociaux en haut) */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-        
-        {/* Logo style Instagram */}
         <div style={{
           width: '130px', height: '130px', margin: '0 auto 20px auto',
           background: '#f1f5f9', borderRadius: '50%', display: 'flex',
@@ -260,7 +268,6 @@ export default function App() {
         </p>
       </header>
 
-      {/* Panneau Admin */}
       {isAdmin && (
         <div style={{
           maxWidth: '1350px', margin: '0 auto 30px auto', background: '#ffffff',
@@ -273,13 +280,12 @@ export default function App() {
             <input type="text" placeholder="Nom du produit" value={title} onChange={e => setTitle(e.target.value)} style={inputStyleLight} required />
             <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyleLight} />
             <input type="number" placeholder="Prix en DH (ex: 150)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyleLight} required />
-            <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={inputStyleLight} />
-            <input type="text" placeholder="Lien du fichier (Téléchargement)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyleLight} />
+            <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={{ ...inputStyleLight, gridColumn: '1 / -1' }} />
             <textarea placeholder="Description..." value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyleLight, gridColumn: '1 / -1', height: '80px' }}></textarea>
             
             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
               <button type="submit" style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>
-                {editingId ? 'Mettre à jour 💾' : 'Publier 🚀'}
+                {editingId ? 'Mettre à jour 💾' : 'Publier dans la DB 🚀'}
               </button>
               {editingId && (
                 <button type="button" onClick={resetForm} style={{ background: '#64748b', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '10px', cursor: 'pointer' }}>
@@ -291,73 +297,77 @@ export default function App() {
         </div>
       )}
 
-      {/* Catalogue Public (Élargi pour utiliser toute la largeur) */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
             ⚡ Catalogue & Licences Disponibles
           </h3>
           <span style={{ fontSize: '0.85rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '600' }}>
-            ● Service en ligne
+            ● Base de données en ligne
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
-          {products.map((product) => (
-            <div key={product.id} style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
-              display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
-            }}>
-              {isAdmin && (
-                <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
-                  <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
-                  <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
-                </div>
-              )}
-
-              <div>
-                {product.image_url && (
-                  <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
-                    <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {loading ? (
+          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Chargement des produits depuis Supabase...</p>
+        ) : products.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit dans la base de données. Connecte-toi en admin pour en ajouter !</p>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
+            {products.map((product) => (
+              <div key={product.id} style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
+              }}>
+                {isAdmin && (
+                  <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
+                    <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
+                    <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
                   </div>
                 )}
 
-                <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
-                  {product.category}
-                </span>
-                
-                <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
-                  {product.title}
-                </h4>
-                
-                <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
-                  {product.description}
-                </p>
-              </div>
+                <div>
+                  {product.image_url && (
+                    <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
+                      <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  )}
 
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
-                    {product.price} DH
+                  <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                    {product.category}
                   </span>
+                  
+                  <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
+                    {product.title}
+                  </h4>
+                  
+                  <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
+                    {product.description}
+                  </p>
                 </div>
 
-                <button onClick={() => setSelectedProduct(product)} style={{
-                  width: '100%', background: '#0f172a',
-                  color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
-                }}>
-                  Acheter 🛒
-                </button>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
+                      {product.price} DH
+                    </span>
+                  </div>
+
+                  <button onClick={() => setSelectedProduct(product)} style={{
+                    width: '100%', background: '#0f172a',
+                    color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                  }}>
+                    Acheter 🛒
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
 
-      {/* Pied de page (Footer) avec les coordonnées et liens de contact */}
       <footer style={{
         maxWidth: '1350px', margin: '80px auto 0 auto', background: '#ffffff',
         border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px 30px',
@@ -370,7 +380,6 @@ export default function App() {
           Contactez-nous directement sur nos réseaux officiels :
         </p>
 
-        {/* Liens Réseaux Sociaux en bas */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
           <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
           <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
