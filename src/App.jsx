@@ -27,11 +27,15 @@ export default function App() {
     return saved ? JSON.parse(saved) : initialProducts;
   });
 
-  const [user, setUser] = useState(null); // { name, email, role: 'admin' | 'client' }
+  const [user, setUser] = useState(null); // { email, role, verifiedPurchases: [] }
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authEmail, setAuthEmail] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [enteredOtp, setEnteredOtp] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
 
-  // États du formulaire Admin (Ajout ou Modification)
+  // Formulaire Admin
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -44,23 +48,39 @@ export default function App() {
     localStorage.setItem('richtech_products', JSON.stringify(products));
   }, [products]);
 
-  // Connexion Client (Google Gmail simulé)
-  const handleGoogleLogin = () => {
-    const email = prompt("Entrez votre adresse Gmail :");
-    if (email && email.includes('@')) {
-      setUser({ name: email.split('@')[0], email, role: 'client' });
+  // Étape 1 : Envoyer le code de confirmation par e-mail
+  const handleRequestOtp = (e) => {
+    e.preventDefault();
+    if (!authEmail || !authEmail.includes('@')) {
+      return alert("Veuillez entrer une adresse e-mail valide.");
+    }
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(code);
+    setOtpSent(true);
+    // Simulation de l'envoi d'e-mail (dans un cas réel, un service d'e-mailing envoie ce code)
+    alert(`[Simulation e-mail envoyé à ${authEmail}] 📧\nVotre code de confirmation de sécurité est : ${code}`);
+  };
+
+  // Étape 2 : Vérifier le code OTP
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (enteredOtp === generatedOtp) {
+      setUser({ email: authEmail, role: 'client', purchases: [] });
       setShowAuthModal(false);
-      alert(`Bienvenue ${email} ! Vous êtes connecté.`);
-    } else if (email) {
-      alert("Veuillez entrer un email valide.");
+      setAuthEmail('');
+      setEnteredOtp('');
+      setOtpSent(false);
+      alert("Identité confirmée avec succès ! Bienvenue.");
+    } else {
+      alert("Code de confirmation incorrect. Veuillez réessayer.");
     }
   };
 
-  // Connexion Admin
+  // Connexion Admin sécurisée
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (adminPassword === 'richtech2026') {
-      setUser({ name: 'Zakaryae (Admin)', email: 'admin@richtech.ma', role: 'admin' });
+      setUser({ email: 'admin@richtech.ma', role: 'admin', purchases: [] });
       setShowAuthModal(false);
       setAdminPassword('');
       alert('Connexion Administrateur réussie !');
@@ -77,28 +97,19 @@ export default function App() {
   };
 
   const resetForm = () => {
-    setTitle('');
-    setCategory('');
-    setDescription('');
-    setPrice('');
-    setImage_url('');
-    setFile_url('');
-    setEditingId(null);
+    setTitle(''); setCategory(''); setDescription(''); setPrice(''); setImage_url(''); setFile_url(''); setEditingId(null);
   };
 
-  // Sauvegarder (Ajouter ou Modifier un produit)
   const handleSaveProduct = (e) => {
     e.preventDefault();
     if (!title || !price) return alert("Le nom et le prix sont obligatoires !");
 
     if (editingId) {
-      // Mode Modification
       setProducts(products.map(p => p.id === editingId ? {
         ...p, title, category: category || 'Solution Pro', description, price: Number(price), image_url, file_url
       } : p));
       alert('Produit modifié avec succès !');
     } else {
-      // Mode Ajout
       const newProduct = {
         id: Date.now().toString(),
         title,
@@ -132,20 +143,32 @@ export default function App() {
   };
 
   const handleWhatsAppOrder = (product) => {
-    const message = encodeURIComponent(`Bonjour RichTech Maroc 👋, je souhaite commander :\n\n📌 *${product.title}*\n💰 Prix : $${product.price}\n\nComment procéder au paiement ?`);
+    const message = encodeURIComponent(`Bonjour RichTech Maroc 👋, je souhaite commander :\n\n📌 *${product.title}*\n💰 Prix : $${product.price}\n\nJe souhaite procéder au paiement pour recevoir mon lien de téléchargement.`);
     window.open(`https://wa.me/message/OHTL6X7NT4P7C1?text=${message}`, '_blank');
   };
 
-  const handleDownloadOrContact = (product) => {
+  // Logique intelligente de téléchargement sécurisé après validation
+  const handleSecureDownload = (product) => {
     if (!user) {
-      alert("Veuillez vous connecter avec votre compte Gmail pour accéder aux téléchargements.");
+      alert("Veuillez vous connecter avec votre e-mail pour accéder à vos téléchargements sécurisés.");
       setShowAuthModal(true);
       return;
     }
-    if (product.file_url && product.file_url.startsWith('http')) {
+
+    // Si l'utilisateur est admin, il a accès à tout
+    if (user.role === 'admin') {
+      if (product.file_url) window.open(product.file_url, '_blank');
+      else alert("Aucun fichier lié à ce produit.");
+      return;
+    }
+
+    // Pour un client normal : vérification si le produit a été payé/validé
+    const hasPaid = user.purchases && user.purchases.includes(product.id);
+
+    if (hasPaid && product.file_url) {
       window.open(product.file_url, '_blank');
     } else {
-      handleWhatsAppOrder(product);
+      alert(`🔒 Accès restreint :\n\nPour télécharger "${product.title}", le paiement doit d'abord être validé par notre équipe.\n\nVeuillez cliquer sur "Commander via WhatsApp" pour régler votre commande et valider votre accès.`);
     }
   };
 
@@ -154,25 +177,25 @@ export default function App() {
       minHeight: '100vh', background: '#030712', color: '#f9fafb',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '40px 20px', overflowX: 'hidden'
     }}>
-      {/* Barre supérieure d'authentification */}
+      {/* Barre d'authentification supérieure */}
       <div style={{ maxWidth: '1100px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
           {user ? (
             <span>Connecté : <strong style={{ color: '#38bdf8' }}>{user.email}</strong> {user.role === 'admin' && '👑 (Admin)'}</span>
           ) : (
-            <span>Visiteur</span>
+            <span>Visiteur non authentifié</span>
           )}
         </div>
         <div>
           {user ? (
             <button onClick={handleLogout} style={authBtnStyle('#ef4444')}>Se déconnecter</button>
           ) : (
-            <button onClick={() => setShowAuthModal(true)} style={authBtnStyle('#2563eb')}>🔑 Se connecter (Gmail / Admin)</button>
+            <button onClick={() => setShowAuthModal(true)} style={authBtnStyle('#2563eb')}>🔑 Connexion / Inscription par E-mail</button>
           )}
         </div>
       </div>
 
-      {/* Modal de connexion */}
+      {/* Modal d'Authentification par Code e-mail (OTP) et Admin */}
       {showAuthModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -183,16 +206,41 @@ export default function App() {
             background: '#0f172a', border: '1px solid rgba(56, 189, 248, 0.3)',
             borderRadius: '20px', padding: '35px', width: '100%', maxWidth: '400px', textAlign: 'center'
           }}>
-            <h3 style={{ color: '#fff', marginBottom: '20px' }}>🔐 Connexion RichTech Maroc</h3>
+            <h3 style={{ color: '#fff', marginBottom: '20px' }}>🔐 Espace Sécurisé RichTech</h3>
             
-            <button onClick={handleGoogleLogin} style={{
-              width: '100%', background: '#ffffff', color: '#1e293b', border: 'none',
-              padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '20px'
-            }}>
-              🌐 Se connecter avec Google Gmail
-            </button>
+            {!otpSent ? (
+              <form onSubmit={handleRequestOtp}>
+                <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '15px' }}>Entrez votre e-mail pour recevoir un code de confirmation :</p>
+                <input 
+                  type="email" placeholder="votre.email@gmail.com" value={authEmail} 
+                  onChange={e => setAuthEmail(e.target.value)} 
+                  style={{ ...inputStyle, width: '100%', marginBottom: '15px', boxSizing: 'border-box' }} required 
+                />
+                <button type="submit" style={{
+                  width: '100%', background: '#2563eb', color: '#fff', border: 'none',
+                  padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
+                }}>
+                  Envoyer le code de validation 📩
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp}>
+                <p style={{ color: '#34d399', fontSize: '0.85rem', marginBottom: '15px' }}>Un code a été envoyé à <strong>{authEmail}</strong>. Entrez-le ci-dessous :</p>
+                <input 
+                  type="text" placeholder="Entrez le code à 4 chiffres" value={enteredOtp} 
+                  onChange={e => setEnteredOtp(e.target.value)} 
+                  style={{ ...inputStyle, width: '100%', marginBottom: '15px', boxSizing: 'border-box', textAlign: 'center', letterSpacing: '4px', fontSize: '1.2rem' }} required 
+                />
+                <button type="submit" style={{
+                  width: '100%', background: '#16a34a', color: '#fff', border: 'none',
+                  padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
+                }}>
+                  Confirmer le code ✅
+                </button>
+              </form>
+            )}
 
-            <div style={{ color: '#64748b', margin: '15px 0', fontSize: '0.85rem' }}>OU ESPACE ADMINISTRATEUR</div>
+            <div style={{ color: '#64748b', margin: '15px 0', fontSize: '0.85rem' }}>--- OU ACCÈS ADMIN ---</div>
 
             <form onSubmit={handleAdminLogin}>
               <input 
@@ -201,14 +249,14 @@ export default function App() {
                 style={{ ...inputStyle, width: '100%', marginBottom: '15px', boxSizing: 'border-box' }} required 
               />
               <button type="submit" style={{
-                width: '100%', background: '#16a34a', color: '#fff', border: 'none',
+                width: '100%', background: '#334155', color: '#fff', border: 'none',
                 padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
               }}>
                 Connexion Admin ⚙️
               </button>
             </form>
 
-            <button onClick={() => setShowAuthModal(false)} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+            <button onClick={() => { setShowAuthModal(false); setOtpSent(false); }} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
               Fermer ✕
             </button>
           </div>
@@ -244,7 +292,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Panneau Admin (Ajout / Modification de produits - Visible uniquement par l'Admin) */}
+      {/* Panneau Admin */}
       {user && user.role === 'admin' && (
         <div style={{
           maxWidth: '1100px', margin: '0 auto 40px auto', background: 'rgba(15, 23, 42, 0.95)',
@@ -258,7 +306,7 @@ export default function App() {
             <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyle} />
             <input type="number" placeholder="Prix en $ (ex: 20)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyle} required />
             <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={inputStyle} />
-            <input type="text" placeholder="Lien du fichier (Téléchargement)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyle} />
+            <input type="text" placeholder="Lien du fichier (Téléchargement sécurisé)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyle} />
             <textarea placeholder="Description..." value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyle, gridColumn: '1 / -1', height: '80px' }}></textarea>
             
             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
@@ -282,7 +330,7 @@ export default function App() {
             ⚡ Catalogue & Licences Disponibles
           </h3>
           <span style={{ fontSize: '0.85rem', color: '#34d399', background: 'rgba(52, 211, 153, 0.1)', padding: '6px 14px', borderRadius: '20px' }}>
-            ● Service en ligne
+            ● Service sécurisé
           </span>
         </div>
 
@@ -294,15 +342,10 @@ export default function App() {
               borderRadius: '20px', padding: '28px', boxShadow: '0 15px 35px -10px rgba(0, 0, 0, 0.5)',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
             }}>
-              {/* Boutons Modifier / Supprimer (Visibles uniquement pour l'Admin) */}
               {user && user.role === 'admin' && (
                 <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px' }}>
-                  <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>
-                    Modifier ✏️
-                  </button>
-                  <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>
-                    Supprimer 🗑️
-                  </button>
+                  <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
+                  <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
                 </div>
               )}
 
@@ -338,14 +381,14 @@ export default function App() {
                     background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
                     color: '#fff', border: 'none', padding: '11px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer'
                   }}>
-                    Commander via WhatsApp 💬
+                    Commander & Payer via WhatsApp 💬
                   </button>
 
-                  <button onClick={() => handleDownloadOrContact(product)} style={{
+                  <button onClick={() => handleSecureDownload(product)} style={{
                     background: 'rgba(255, 255, 255, 0.06)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)',
                     padding: '10px', borderRadius: '10px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer'
                   }}>
-                    📥 Télécharger après validation
+                    📥 Télécharger (Réservé après paiement)
                   </button>
                 </div>
               </div>
