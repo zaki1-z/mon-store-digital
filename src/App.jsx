@@ -8,6 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dbError, setDbError] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -17,12 +18,12 @@ export default function App() {
     try {
       const { data, error } = await supabase.from('products').select('*');
       if (error) {
-        console.error('Erreur Supabase :', error.message);
-      } else if (data) {
-        setProducts(data);
+        setDbError(error.message);
+      } else {
+        setProducts(data || []);
       }
     } catch (err) {
-      console.error('Erreur :', err);
+      setDbError(err.message);
     }
     setLoading(false);
   }
@@ -96,7 +97,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Catalogue Client Épuré */}
+      {/* Catalogue Client */}
       <main style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '15px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#f3f4f6' }}>
@@ -109,9 +110,15 @@ export default function App() {
 
         {loading ? (
           <p style={{ textAlign: 'center', color: '#94a3b8', padding: '50px' }}>Chargement du catalogue...</p>
+        ) : dbError ? (
+          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '20px', borderRadius: '12px', color: '#fca5a5', textAlign: 'center' }}>
+            <p style={{ fontWeight: '700', margin: '0 0 8px 0' }}>Problème de connexion :</p>
+            <p style={{ margin: 0, fontSize: '0.9rem' }}>{dbError}</p>
+          </div>
         ) : products.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit disponible pour le moment. Revenez très bientôt !</p>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Aucun produit trouvé dans la table <code style={{ color: '#38bdf8' }}>products</code>.</p>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Vérifie que tu as bien inséré des lignes dans ton tableau Supabase.</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
