@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-// Configuration JSONBin.io pour RichTech Maroc
-const BIN_ID = '66e0b65bac6210685a4d012d';[cite: 8]
-const API_KEY = '$2a$10$Zr.AZLuiOr3Ycy1HsxdjcuueJ0kqRhUDIo0c9r4t7mSXBgWYmabi.';[cite: 8]
+const BIN_ID = '66e0b65bac6210685a4d012d';
+const API_KEY = '$2a$10$Zr.AZLuiOr3Ycy1HsxdjcuueJ0kqRhUDIo0c9r4t7mSXBgWYmabi.';
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -12,14 +11,12 @@ export default function App() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
 
-  // États du formulaire de commande client
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [clientNom, setClientNom] = useState('');
   const [clientPrenom, setClientPrenom] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // États du formulaire Admin (Ajout / Modif)
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -27,7 +24,6 @@ export default function App() {
   const [price, setPrice] = useState('');
   const [image_url, setImage_url] = useState('');
 
-  // Charger les produits depuis JSONBin au démarrage
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -38,7 +34,9 @@ export default function App() {
         headers: { 'X-Master-Key': API_KEY }
       });
       const data = await res.json();
-      setProducts(data.record || []);
+      // JSONBin stocke les données dans .record
+      const items = data.record.record ? data.record.record : data.record;
+      setProducts(Array.isArray(items) ? items : []);
       setLoading(false);
     } catch (err) {
       console.error('Erreur chargement :', err);
@@ -46,19 +44,21 @@ export default function App() {
     }
   };
 
-  // Sauvegarder la liste mise à jour sur JSONBin
   const saveProductsToCloud = async (updatedProducts) => {
     try {
+      // On enveloppe les produits dans un objet { record: ... } pour respecter la structure JSONBin v3
       const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'X-Master-Key': API_KEY
         },
-        body: JSON.stringify(updatedProducts)
+        body: JSON.stringify({ record: updatedProducts })
       });
+      
       if (res.ok) {
         setProducts(updatedProducts);
+        alert('Synchronisation cloud réussie !');
       } else {
         alert('Erreur lors de la synchronisation cloud.');
       }
@@ -97,7 +97,6 @@ export default function App() {
       updatedProducts = products.map(p => p.id === editingId ? {
         ...p, title, category: category || 'Solution Pro', description, price: Number(price), image_url: image_url || p.image_url
       } : p);
-      alert('Produit modifié avec succès dans le cloud !');
     } else {
       const newProduct = {
         id: Date.now().toString(),
@@ -108,7 +107,6 @@ export default function App() {
         image_url: image_url || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
       };
       updatedProducts = [newProduct, ...products];
-      alert('Produit ajouté avec succès dans le cloud !');
     }
 
     await saveProductsToCloud(updatedProducts);
@@ -164,7 +162,6 @@ export default function App() {
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
     }}>
-      {/* Barre supérieure Admin */}
       <div style={{ maxWidth: '1350px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         {isAdmin ? (
           <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
@@ -173,7 +170,6 @@ export default function App() {
         )}
       </div>
 
-      {/* Modal Connexion Admin */}
       {showAdminLogin && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -206,7 +202,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal Formulaire Commande Client */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -249,7 +244,6 @@ export default function App() {
         </div>
       )}
 
-      {/* En-tête / Style Instagram Pro */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         <div style={{
           width: '130px', height: '130px', margin: '0 auto 20px auto',
@@ -276,7 +270,6 @@ export default function App() {
         </p>
       </header>
 
-      {/* Panneau Admin */}
       {isAdmin && (
         <div style={{
           maxWidth: '1350px', margin: '0 auto 30px auto', background: '#ffffff',
@@ -306,7 +299,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Catalogue Public */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
@@ -331,7 +323,7 @@ export default function App() {
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
               }}>
                 {isAdmin && (
-                  <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
+                  <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: '10' }}>
                     <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
                     <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
                   </div>
