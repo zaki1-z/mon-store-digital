@@ -114,7 +114,6 @@ export default function App() {
     }
   };
 
-  // Validation de la commande en DH avec ton numéro WhatsApp
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
     if (!clientNom || !clientPrenom || !clientEmail || !clientPhone) {
@@ -144,82 +143,86 @@ export default function App() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#030712', color: '#f9fafb',
-      fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '40px 20px', overflowX: 'hidden'
+      minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 20px', overflowX: 'hidden'
     }}>
+      {/* Barre supérieure Admin */}
       <div style={{ maxWidth: '1100px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         {isAdmin ? (
           <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
         ) : (
-          <button onClick={() => setShowAdminLogin(true)} style={authBtnStyle('#334155')}>⚙️ Espace Admin</button>
+          <button onClick={() => setShowAdminLogin(true)} style={authBtnStyle('#1e293b')}>⚙️ Espace Admin</button>
         )}
       </div>
 
+      {/* Modal Connexion Admin */}
       {showAdminLogin && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)',
           display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
         }}>
           <div style={{
-            background: '#0f172a', border: '1px solid rgba(56, 189, 248, 0.3)',
-            borderRadius: '20px', padding: '35px', width: '100%', maxWidth: '400px', textAlign: 'center'
+            background: '#ffffff', border: '1px solid #e2e8f0',
+            borderRadius: '20px', padding: '35px', width: '100%', maxWidth: '400px', textAlign: 'center',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
           }}>
-            <h3 style={{ color: '#fff', marginBottom: '20px' }}>⚙️ Connexion Administrateur</h3>
+            <h3 style={{ color: '#0f172a', marginBottom: '20px' }}>⚙️ Connexion Administrateur</h3>
             <form onSubmit={handleAdminLogin}>
               <input 
                 type="password" placeholder="Mot de passe Admin" value={adminPassword} 
                 onChange={e => setAdminPassword(e.target.value)} 
-                style={{ ...inputStyle, width: '100%', marginBottom: '15px', boxSizing: 'border-box' }} required 
+                style={{ ...inputStyle, background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1', width: '100%', marginBottom: '15px', boxSizing: 'border-box' }} required 
               />
               <button type="submit" style={{
-                width: '100%', background: '#16a34a', color: '#fff', border: 'none',
+                width: '100%', background: '#0f172a', color: '#fff', border: 'none',
                 padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer', marginBottom: '15px'
               }}>
                 Se connecter
               </button>
             </form>
-            <button onClick={() => setShowAdminLogin(false)} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+            <button onClick={() => setShowAdminLogin(false)} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer' }}>
               Fermer ✕
             </button>
           </div>
         </div>
       )}
 
+      {/* Modal Formulaire Commande Client */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)',
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)',
           display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '20px'
         }}>
           <div style={{
-            background: '#0f172a', border: '1px solid rgba(56, 189, 248, 0.4)',
+            background: '#ffffff', border: '1px solid #e2e8f0',
             borderRadius: '20px', padding: '30px', width: '100%', maxWidth: '450px',
-            boxShadow: '0 25px 50px rgba(0,0,0,0.8)'
+            boxShadow: '0 25px 50px rgba(0,0,0,0.15)'
           }}>
-            <h3 style={{ color: '#fff', marginBottom: '10px', fontSize: '1.4rem' }}>🛒 Valider votre commande</h3>
-            <p style={{ color: '#38bdf8', fontSize: '0.95rem', marginBottom: '20px' }}>
+            <h3 style={{ color: '#0f172a', marginBottom: '10px', fontSize: '1.4rem' }}>🛒 Valider votre commande</h3>
+            <p style={{ color: '#0284c7', fontSize: '0.95rem', marginBottom: '20px' }}>
               Produit : <strong>{selectedProduct.title}</strong> ({selectedProduct.price} DH)
             </p>
 
             <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <input type="text" placeholder="Nom" value={clientNom} onChange={e => setClientNom(e.target.value)} style={inputStyle} required />
-              <input type="text" placeholder="Prénom" value={clientPrenom} onChange={e => setClientPrenom(e.target.value)} style={inputStyle} required />
-              <input type="email" placeholder="Adresse e-mail" value={clientEmail} onChange={e => setClientEmail(e.target.value)} style={inputStyle} required />
-              <input type="tel" placeholder="Numéro de téléphone" value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={inputStyle} required />
+              <input type="text" placeholder="Nom" value={clientNom} onChange={e => setClientNom(e.target.value)} style={inputStyleLight} required />
+              <input type="text" placeholder="Prénom" value={clientPrenom} onChange={e => setClientPrenom(e.target.value)} style={inputStyleLight} required />
+              <input type="email" placeholder="Adresse e-mail" value={clientEmail} onChange={e => setClientEmail(e.target.value)} style={inputStyleLight} required />
+              <input type="tel" placeholder="Numéro de téléphone" value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={inputStyleLight} required />
 
               <button type="submit" style={{
-                background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                background: '#16a34a',
                 color: '#fff', border: 'none', padding: '14px', borderRadius: '10px',
                 fontWeight: '700', fontSize: '1rem', cursor: 'pointer', marginTop: '10px',
-                boxShadow: '0 4px 15px rgba(22, 163, 74, 0.4)'
+                boxShadow: '0 4px 15px rgba(22, 163, 74, 0.3)'
               }}>
                 Envoyer la commande sur WhatsApp 🚀
               </button>
             </form>
 
             <button onClick={() => setSelectedProduct(null)} style={{
-              background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer',
+              background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer',
               marginTop: '15px', width: '100%', textAlign: 'center', fontSize: '0.9rem'
             }}>
               Annuler ✕
@@ -228,56 +231,65 @@ export default function App() {
         </div>
       )}
 
-      <header style={{ maxWidth: '1100px', margin: '0 auto 50px auto', textAlign: 'center' }}>
+      {/* En-tête / Style Instagram Pro */}
+      <header style={{ maxWidth: '900px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '40px 20px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+        
+        {/* Logo style Instagram (Cercle épuré identique à ta photo) */}
         <div style={{
-          display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
-          border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '24px', padding: '22px 35px', marginBottom: '25px'
+          width: '130px', height: '130px', margin: '0 auto 20px auto',
+          background: '#f1f5f9', borderRadius: '50%', display: 'flex',
+          flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+          border: '3px solid #0f172a', boxShadow: '0 10px 25px rgba(0,0,0,0.08)', padding: '10px'
         }}>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: '900', margin: '0 0 8px 0', color: '#ffffff' }}>
-            RichTech <span style={{ color: '#38bdf8' }}>MAROC</span>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: '900', margin: '0 0 4px 0', color: '#0f172a', lineHeight: '1.1' }}>
+            RichTech
           </h2>
-          <div style={{ display: 'flex', gap: '15px', fontSize: '1.2rem', color: '#38bdf8', marginTop: '5px' }}>
-            <span>🎥 CCTV</span><span>⌨️ IT</span><span>📱 Mobile</span><span>📺 IPTV</span>
+          <span style={{ fontSize: '0.75rem', fontWeight: '700', letterSpacing: '2px', color: '#0f172a', marginBottom: '8px' }}>
+            MAROC
+          </span>
+          <div style={{ display: 'flex', gap: '4px', fontSize: '0.75rem' }}>
+            <span>🎥</span><span>⌨️</span><span>📱</span><span>📺</span>
           </div>
         </div>
 
-        <h1 style={{ fontSize: '2.8rem', fontWeight: '800', margin: '0 0 15px 0', background: 'linear-gradient(to right, #60a5fa, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          Solutions Numériques & Licences Officielles
+        <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 10px 0', color: '#0f172a' }}>
+          RichTech Maroc
         </h1>
-        <p style={{ color: '#94a3b8', fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto 30px auto', lineHeight: '1.6' }}>
-          Votre partenaire de confiance au Maroc pour le matériel informatique, la sécurité, l'IPTV et les licences logicielles.
+        <p style={{ color: '#475569', fontSize: '1.05rem', maxWidth: '550px', margin: '0 auto 20px auto', lineHeight: '1.5' }}>
+          La technologie au service de votre avenir. Informatique, caméras de surveillance, réseaux, IPTV et licences officielles.
         </p>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
+        {/* Liens Réseaux Sociaux */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
           <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
-          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp Business</a>
+          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
         </div>
       </header>
 
+      {/* Panneau Admin */}
       {isAdmin && (
         <div style={{
-          maxWidth: '1100px', margin: '0 auto 40px auto', background: 'rgba(15, 23, 42, 0.95)',
-          border: '1px solid rgba(56, 189, 248, 0.4)', borderRadius: '20px', padding: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.6)'
+          maxWidth: '900px', margin: '0 auto 30px auto', background: '#ffffff',
+          border: '1px solid #cbd5e1', borderRadius: '20px', padding: '30px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)'
         }}>
-          <h3 style={{ margin: '0 0 20px 0', color: '#38bdf8', fontSize: '1.3rem' }}>
+          <h3 style={{ margin: '0 0 20px 0', color: '#0f172a', fontSize: '1.3rem' }}>
             {editingId ? '✏️ Modifier le produit' : '➕ Ajouter un nouveau produit'}
           </h3>
           <form onSubmit={handleSaveProduct} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
-            <input type="text" placeholder="Nom du produit" value={title} onChange={e => setTitle(e.target.value)} style={inputStyle} required />
-            <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyle} />
-            <input type="number" placeholder="Prix en DH (ex: 150)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyle} required />
-            <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={inputStyle} />
-            <input type="text" placeholder="Lien du fichier (Téléchargement)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyle} />
-            <textarea placeholder="Description..." value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyle, gridColumn: '1 / -1', height: '80px' }}></textarea>
+            <input type="text" placeholder="Nom du produit" value={title} onChange={e => setTitle(e.target.value)} style={inputStyleLight} required />
+            <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyleLight} />
+            <input type="number" placeholder="Prix en DH (ex: 150)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyleLight} required />
+            <input type="text" placeholder="Lien de l'image (URL)" value={image_url} onChange={e => setImage_url(e.target.value)} style={inputStyleLight} />
+            <input type="text" placeholder="Lien du fichier (Téléchargement)" value={file_url} onChange={e => setFile_url(e.target.value)} style={inputStyleLight} />
+            <textarea placeholder="Description..." value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyleLight, gridColumn: '1 / -1', height: '80px' }}></textarea>
             
             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
               <button type="submit" style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>
                 {editingId ? 'Mettre à jour 💾' : 'Publier 🚀'}
               </button>
               {editingId && (
-                <button type="button" onClick={resetForm} style={{ background: '#475569', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '10px', cursor: 'pointer' }}>
+                <button type="button" onClick={resetForm} style={{ background: '#64748b', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '10px', cursor: 'pointer' }}>
                   Annuler
                 </button>
               )}
@@ -286,62 +298,63 @@ export default function App() {
         </div>
       )}
 
-      <main style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '15px' }}>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#f3f4f6' }}>
+      {/* Catalogue Public */}
+      <main style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
             ⚡ Catalogue & Licences Disponibles
           </h3>
-          <span style={{ fontSize: '0.85rem', color: '#34d399', background: 'rgba(52, 211, 153, 0.1)', padding: '6px 14px', borderRadius: '20px' }}>
+          <span style={{ fontSize: '0.8rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '5px 12px', borderRadius: '20px', fontWeight: '600' }}>
             ● Service en ligne
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
           {products.map((product) => (
             <div key={product.id} style={{
-              background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.6) 100%)',
-              backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '20px', padding: '28px', boxShadow: '0 15px 35px -10px rgba(0, 0, 0, 0.5)',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
             }}>
               {isAdmin && (
-                <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px' }}>
-                  <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
-                  <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
+                <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
+                  <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
+                  <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
                 </div>
               )}
 
               <div>
                 {product.image_url && (
-                  <div style={{ width: '100%', height: '160px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#1e293b' }}>
+                  <div style={{ width: '100%', height: '150px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
                     <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 )}
 
-                <span style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
                   {product.category}
                 </span>
                 
-                <h4 style={{ fontSize: '1.35rem', fontWeight: '700', margin: '14px 0 10px 0', color: '#ffffff' }}>
+                <h4 style={{ fontSize: '1.25rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
                   {product.title}
                 </h4>
                 
-                <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 24px 0' }}>
+                <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
                   {product.description}
                 </p>
               </div>
 
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '18px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '1.8rem', fontWeight: '800', color: '#34d399' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a' }}>
                     {product.price} DH
                   </span>
                 </div>
 
                 <button onClick={() => setSelectedProduct(product)} style={{
-                  width: '100%', background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                  width: '100%', background: '#0f172a',
                   color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)'
+                  boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
                 }}>
                   Acheter 🛒
                 </button>
@@ -351,14 +364,21 @@ export default function App() {
         </div>
       </main>
 
-      <footer style={{ textAlign: 'center', marginTop: '90px', color: '#64748b', fontSize: '0.9rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '25px' }}>
-        <p style={{ margin: '0 0 5px 0', color: '#94a3b8', fontWeight: '500' }}>RichTech Maroc • Solutions Informatiques & Sécurité</p>
+      <footer style={{ textAlign: 'center', marginTop: '70px', color: '#64748b', fontSize: '0.85rem', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
+        <p style={{ margin: '0 0 4px 0', color: '#0f172a', fontWeight: '600' }}>RichTech Maroc • Solutions Informatiques & Sécurité</p>
         <p style={{ margin: 0 }}>© 2026 Tous droits réservés.</p>
       </footer>
     </div>
   );
 }
 
-const inputStyle = { background: '#030712', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
+const inputStyleLight = { background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', color: '#0f172a', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
 function authBtnStyle(bg) { return { background: bg, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' }; }
-function socialBtnStyle(color1, color2) { return { background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`, color: '#fff', padding: '11px 22px', borderRadius: '12px', textDecoration: 'none', fontSize: '0.92rem', fontWeight: '600', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }; }
+function socialBtnStyle(color1, color2) {
+  return {
+    background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
+    color: '#fff', padding: '10px 20px', borderRadius: '12px',
+    textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+  };
+}
