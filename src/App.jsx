@@ -144,10 +144,10 @@ export default function App() {
   return (
     <div style={{
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
-      fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 20px', overflowX: 'hidden'
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
     }}>
       {/* Barre supérieure Admin */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+      <div style={{ maxWidth: '1350px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         {isAdmin ? (
           <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
         ) : (
@@ -172,7 +172,7 @@ export default function App() {
               <input 
                 type="password" placeholder="Mot de passe Admin" value={adminPassword} 
                 onChange={e => setAdminPassword(e.target.value)} 
-                style={{ ...inputStyle, background: '#f8fafc', color: '#0f172a', border: '1px solid #cbd5e1', width: '100%', marginBottom: '15px', boxSizing: 'border-box' }} required 
+                style={{ ...inputStyleLight, marginBottom: '15px', boxSizing: 'border-box' }} required 
               />
               <button type="submit" style={{
                 width: '100%', background: '#0f172a', color: '#fff', border: 'none',
@@ -231,10 +231,10 @@ export default function App() {
         </div>
       )}
 
-      {/* En-tête / Style Instagram Pro */}
-      <header style={{ maxWidth: '900px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '40px 20px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+      {/* En-tête / Style Instagram Pro (Élargi et sans boutons sociaux en haut) */}
+      <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         
-        {/* Logo style Instagram (Cercle épuré identique à ta photo) */}
+        {/* Logo style Instagram */}
         <div style={{
           width: '130px', height: '130px', margin: '0 auto 20px auto',
           background: '#f1f5f9', borderRadius: '50%', display: 'flex',
@@ -252,31 +252,24 @@ export default function App() {
           </div>
         </div>
 
-        <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 10px 0', color: '#0f172a' }}>
+        <h1 style={{ fontSize: '2.4rem', fontWeight: '800', margin: '0 0 10px 0', color: '#0f172a' }}>
           RichTech Maroc
         </h1>
-        <p style={{ color: '#475569', fontSize: '1.05rem', maxWidth: '550px', margin: '0 auto 20px auto', lineHeight: '1.5' }}>
+        <p style={{ color: '#475569', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.5' }}>
           La technologie au service de votre avenir. Informatique, caméras de surveillance, réseaux, IPTV et licences officielles.
         </p>
-
-        {/* Liens Réseaux Sociaux */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
-          <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
-          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
-        </div>
       </header>
 
       {/* Panneau Admin */}
       {isAdmin && (
         <div style={{
-          maxWidth: '900px', margin: '0 auto 30px auto', background: '#ffffff',
+          maxWidth: '1350px', margin: '0 auto 30px auto', background: '#ffffff',
           border: '1px solid #cbd5e1', borderRadius: '20px', padding: '30px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)'
         }}>
           <h3 style={{ margin: '0 0 20px 0', color: '#0f172a', fontSize: '1.3rem' }}>
             {editingId ? '✏️ Modifier le produit' : '➕ Ajouter un nouveau produit'}
           </h3>
-          <form onSubmit={handleSaveProduct} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
+          <form onSubmit={handleSaveProduct} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
             <input type="text" placeholder="Nom du produit" value={title} onChange={e => setTitle(e.target.value)} style={inputStyleLight} required />
             <input type="text" placeholder="Catégorie (ex: Logiciel)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyleLight} />
             <input type="number" placeholder="Prix en DH (ex: 150)" value={price} onChange={e => setPrice(e.target.value)} style={inputStyleLight} required />
@@ -298,62 +291,62 @@ export default function App() {
         </div>
       )}
 
-      {/* Catalogue Public */}
-      <main style={{ maxWidth: '900px', margin: '0 auto' }}>
+      {/* Catalogue Public (Élargi pour utiliser toute la largeur) */}
+      <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
-          <h3 style={{ fontSize: '1.3rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
             ⚡ Catalogue & Licences Disponibles
           </h3>
-          <span style={{ fontSize: '0.8rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '5px 12px', borderRadius: '20px', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.85rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '600' }}>
             ● Service en ligne
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
           {products.map((product) => (
             <div key={product.id} style={{
               background: '#ffffff',
               border: '1px solid #e2e8f0',
-              borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
+              borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
             }}>
               {isAdmin && (
                 <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
-                  <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
-                  <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
+                  <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
+                  <button onClick={() => handleDeleteProduct(product.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Supprimer 🗑️</button>
                 </div>
               )}
 
               <div>
                 {product.image_url && (
-                  <div style={{ width: '100%', height: '150px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
+                  <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
                     <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 )}
 
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
                   {product.category}
                 </span>
                 
-                <h4 style={{ fontSize: '1.25rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
+                <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
                   {product.title}
                 </h4>
                 
-                <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
+                <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
                   {product.description}
                 </p>
               </div>
 
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a' }}>
+                  <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
                     {product.price} DH
                   </span>
                 </div>
 
                 <button onClick={() => setSelectedProduct(product)} style={{
                   width: '100%', background: '#0f172a',
-                  color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
+                  color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
                   boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
                 }}>
                   Acheter 🛒
@@ -364,9 +357,27 @@ export default function App() {
         </div>
       </main>
 
-      <footer style={{ textAlign: 'center', marginTop: '70px', color: '#64748b', fontSize: '0.85rem', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
-        <p style={{ margin: '0 0 4px 0', color: '#0f172a', fontWeight: '600' }}>RichTech Maroc • Solutions Informatiques & Sécurité</p>
-        <p style={{ margin: 0 }}>© 2026 Tous droits réservés.</p>
+      {/* Pied de page (Footer) avec les coordonnées et liens de contact */}
+      <footer style={{
+        maxWidth: '1350px', margin: '80px auto 0 auto', background: '#ffffff',
+        border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px 30px',
+        textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+      }}>
+        <h4 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
+          RichTech Maroc • Solutions Informatiques & Sécurité
+        </h4>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '25px' }}>
+          Contactez-nous directement sur nos réseaux officiels :
+        </p>
+
+        {/* Liens Réseaux Sociaux en bas */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
+          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
+          <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
+          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
+        </div>
+
+        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 RichTech Maroc. Tous droits réservés.</p>
       </footer>
     </div>
   );
@@ -377,7 +388,7 @@ function authBtnStyle(bg) { return { background: bg, color: '#fff', border: 'non
 function socialBtnStyle(color1, color2) {
   return {
     background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
-    color: '#fff', padding: '10px 20px', borderRadius: '12px',
+    color: '#fff', padding: '11px 22px', borderRadius: '12px',
     textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600',
     boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
   };
