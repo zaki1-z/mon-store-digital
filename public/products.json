@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "title": "Licence Windows 11 Pro (À vie)",
+    "category": "Logiciel Officiel",
+    "description": "Activation officielle et définitive pour 1 PC. Mises à jour incluses.",
+    "price": 150,
+    "image_url": "https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=500&auto=format&fit=crop&q=60"
+  },
+  {
+    "id": "2",
+    "title": "Microsoft Office 2021 Pro Plus",
+    "category": "Bureautique",
+    "description": "Word, Excel, PowerPoint, Outlook. Clé officielle liée à votre compte.",
+    "price": 250,
+    "image_url": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&auto=format&fit=crop&q=60"
+  }
+]
