@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://dsgrbhofkappxpuimkg.supabase.co';
-const supabaseKey = 'sb_publishable_HuoDWYkQYegythDbrvV1gw_dBc0rkCy';
+// Configuration de ta nouvelle base de données Supabase
+const supabaseUrl = 'https://qchcolehuedxfruyzufi.supabase.co';
+const supabaseKey = 'sb_publishable_azyrdA28iD1QsJQ9S4jWWg_Xhk8hD61';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function App() {
@@ -20,7 +21,7 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // États du formulaire Admin (sans file_url)
+  // États du formulaire Admin
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -160,6 +161,7 @@ export default function App() {
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
     }}>
+      {/* Barre supérieure Admin */}
       <div style={{ maxWidth: '1350px', margin: '0 auto 20px auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         {isAdmin ? (
           <button onClick={handleLogoutAdmin} style={authBtnStyle('#ef4444')}>Quitter le mode Admin ✕</button>
@@ -168,6 +170,7 @@ export default function App() {
         )}
       </div>
 
+      {/* Modal Connexion Admin */}
       {showAdminLogin && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -200,6 +203,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Modal Formulaire Commande Client */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -242,6 +246,7 @@ export default function App() {
         </div>
       )}
 
+      {/* En-tête / Style Instagram Pro */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         <div style={{
           width: '130px', height: '130px', margin: '0 auto 20px auto',
@@ -268,6 +273,7 @@ export default function App() {
         </p>
       </header>
 
+      {/* Panneau Admin */}
       {isAdmin && (
         <div style={{
           maxWidth: '1350px', margin: '0 auto 30px auto', background: '#ffffff',
@@ -297,6 +303,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Catalogue Public */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
@@ -381,24 +388,4 @@ export default function App() {
         </p>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
-          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
-          <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
-          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
-        </div>
-
-        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 RichTech Maroc. Tous droits réservés.</p>
-      </footer>
-    </div>
-  );
-}
-
-const inputStyleLight = { background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', color: '#0f172a', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
-function authBtnStyle(bg) { return { background: bg, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer' }; }
-function socialBtnStyle(color1, color2) {
-  return {
-    background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
-    color: '#fff', padding: '11px 22px', borderRadius: '12px',
-    textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-  };
-}
+          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="
