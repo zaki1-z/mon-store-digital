@@ -1,29 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-const initialProducts = [
-  {
-    id: '1',
-    title: 'Licence Windows 11 Pro (À vie)',
-    category: 'Logiciel Officiel',
-    description: 'Activation officielle et définitive pour 1 PC. Mises à jour incluses.',
-    price: 150,
-    image_url: 'https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=500&auto=format&fit=crop&q=60'
-  },
-  {
-    id: '2',
-    title: 'Microsoft Office 2021 Pro Plus',
-    category: 'Bureautique',
-    description: 'Word, Excel, PowerPoint, Outlook. Clé officielle liée à votre compte.',
-    price: 250,
-    image_url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&auto=format&fit=crop&q=60'
-  }
-];
+// Configuration JSONBin.io pour RichTech Maroc
+const BIN_ID = '66e0b65bac6210685a4d012d';[cite: 8]
+const API_KEY = '$2a$10$Zr.AZLuiOr3Ycy1HsxdjcuueJ0kqRhUDIo0c9r4t7mSXBgWYmabi.';[cite: 8]
 
 export default function App() {
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('richtech_products_v2');
-    return saved ? JSON.parse(saved) : initialProducts;
-  });
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -44,9 +27,45 @@ export default function App() {
   const [price, setPrice] = useState('');
   const [image_url, setImage_url] = useState('');
 
+  // Charger les produits depuis JSONBin au démarrage
   useEffect(() => {
-    localStorage.setItem('richtech_products_v2', JSON.stringify(products));
-  }, [products]);
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const data = await res.json();
+      setProducts(data.record || []);
+      setLoading(false);
+    } catch (err) {
+      console.error('Erreur chargement :', err);
+      setLoading(false);
+    }
+  };
+
+  // Sauvegarder la liste mise à jour sur JSONBin
+  const saveProductsToCloud = async (updatedProducts) => {
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY
+        },
+        body: JSON.stringify(updatedProducts)
+      });
+      if (res.ok) {
+        setProducts(updatedProducts);
+      } else {
+        alert('Erreur lors de la synchronisation cloud.');
+      }
+    } catch (err) {
+      console.error('Erreur sauvegarde :', err);
+    }
+  };
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -69,15 +88,16 @@ export default function App() {
     setTitle(''); setCategory(''); setDescription(''); setPrice(''); setImage_url(''); setEditingId(null);
   };
 
-  const handleSaveProduct = (e) => {
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!title || !price) return alert("Le nom et le prix sont obligatoires !");
 
+    let updatedProducts;
     if (editingId) {
-      setProducts(products.map(p => p.id === editingId ? {
+      updatedProducts = products.map(p => p.id === editingId ? {
         ...p, title, category: category || 'Solution Pro', description, price: Number(price), image_url: image_url || p.image_url
-      } : p));
-      alert('Produit modifié avec succès !');
+      } : p);
+      alert('Produit modifié avec succès dans le cloud !');
     } else {
       const newProduct = {
         id: Date.now().toString(),
@@ -87,9 +107,11 @@ export default function App() {
         price: Number(price),
         image_url: image_url || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
       };
-      setProducts([newProduct, ...products]);
-      alert('Produit ajouté avec succès !');
+      updatedProducts = [newProduct, ...products];
+      alert('Produit ajouté avec succès dans le cloud !');
     }
+
+    await saveProductsToCloud(updatedProducts);
     resetForm();
   };
 
@@ -103,9 +125,10 @@ export default function App() {
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = async (id) => {
     if (confirm('Voulez-vous vraiment supprimer ce produit ?')) {
-      setProducts(products.filter(p => p.id !== id));
+      const updatedProducts = products.filter(p => p.id !== id);
+      await saveProductsToCloud(updatedProducts);
     }
   };
 
@@ -253,14 +276,14 @@ export default function App() {
         </p>
       </header>
 
-      {/* Panneau Admin (Ajout / Modification de produits) */}
+      {/* Panneau Admin */}
       {isAdmin && (
         <div style={{
           maxWidth: '1350px', margin: '0 auto 30px auto', background: '#ffffff',
           border: '1px solid #cbd5e1', borderRadius: '20px', padding: '30px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)'
         }}>
           <h3 style={{ margin: '0 0 20px 0', color: '#0f172a', fontSize: '1.3rem' }}>
-            {editingId ? '✏️ Modifier le produit' : '➕ Ajouter un nouveau produit'}
+            {editingId ? '✏️ Modifier le produit' : '➕ Ajouter un nouveau produit (Cloud)'}
           </h3>
           <form onSubmit={handleSaveProduct} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
             <input type="text" placeholder="Nom du produit" value={title} onChange={e => setTitle(e.target.value)} style={inputStyleLight} required />
@@ -271,7 +294,7 @@ export default function App() {
             
             <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
               <button type="submit" style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>
-                {editingId ? 'Mettre à jour 💾' : 'Publier le produit 🚀'}
+                {editingId ? 'Mettre à jour 💾' : 'Publier dans le Cloud 🚀'}
               </button>
               {editingId && (
                 <button type="button" onClick={resetForm} style={{ background: '#64748b', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '10px', cursor: 'pointer' }}>
@@ -290,11 +313,13 @@ export default function App() {
             ⚡ Catalogue & Licences Disponibles
           </h3>
           <span style={{ fontSize: '0.85rem', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '6px 14px', borderRadius: '20px', fontWeight: '600' }}>
-            ● Boutique en ligne active
+            ● Synchro Cloud Temps Réel
           </span>
         </div>
 
-        {products.length === 0 ? (
+        {loading ? (
+          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Chargement du catalogue cloud...</p>
+        ) : products.length === 0 ? (
           <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit disponible pour le moment.</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
@@ -305,7 +330,6 @@ export default function App() {
                 borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative'
               }}>
-                {/* Boutons Admin affichés directement sur les cartes si connecté */}
                 {isAdmin && (
                   <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '5px', zIndex: 10 }}>
                     <button onClick={() => handleEditClick(product)} style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', cursor: 'pointer' }}>Modifier ✏️</button>
@@ -354,7 +378,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Pied de page (Footer) */}
       <footer style={{
         maxWidth: '1350px', margin: '80px auto 0 auto', background: '#ffffff',
         border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px 30px',
