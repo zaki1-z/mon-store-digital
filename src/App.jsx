@@ -289,22 +289,13 @@ export default function App() {
           const title = cleanRow[1] || '';
           const category = cleanRow[2] || 'Solution Pro';
 
-          // Filtre ultra-strict contre les scripts injectés ou extensions de navigateur
+          // Filtre précis uniquement pour écarter le code injecté sans toucher aux vrais produits
           const isJunk = (text) => {
             const lower = text.toLowerCase();
-            return (
-              lower.includes('function') || 
-              lower.includes('prototype') || 
-              lower.includes('navigator') || 
-              lower.includes('return') || 
-              lower.includes('blockers') || 
-              lower.includes('math.random') ||
-              lower.includes('report') ||
-              text.length > 60
-            );
+            return lower.includes('blockers') || (lower.includes('function') && lower.includes('prototype'));
           };
 
-          if (cleanRow.length >= 2 && title && !isJunk(title) && !isJunk(category)) {
+          if (cleanRow.length >= 2 && title && !isJunk(title)) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
               title: title,
