@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fsf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fysf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
 
 const t = {
   fr: {
@@ -205,12 +205,20 @@ export default function App() {
 
           const cleanRow = row.map(val => val.replace(/^["'](.+)["']$/, '$1').trim());
 
-          // Parsing souple : même si le prix n'est pas parfait, on affiche le produit quand même pour ne rien bloquer
-          if (cleanRow.length >= 2 && cleanRow[1]) {
+          const title = cleanRow[1] || '';
+          const category = cleanRow[2] || 'Solution Pro';
+
+          // Filtre anti-extensions / anti-scripts injectés par le navigateur
+          const isJunk = (text) => {
+            const lower = text.toLowerCase();
+            return lower.includes('function') || lower.includes('prototype') || lower.includes('navigator') || lower.includes('return') || lower.length > 80;
+          };
+
+          if (cleanRow.length >= 2 && title && !isJunk(title) && !isJunk(category)) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
-              title: cleanRow[1] || '',
-              category: cleanRow[2] || 'Solution Pro',
+              title: title,
+              category: category,
               description: cleanRow[3] || 'Solution professionnelle certifiée RichTech Maroc.',
               price: Number(cleanRow[4]) || 0,
               image_url: cleanRow[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
