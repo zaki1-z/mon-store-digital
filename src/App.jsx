@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fysf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fsf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
 
 const t = {
   fr: {
@@ -266,6 +266,38 @@ export default function App() {
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden',
       direction: lang === 'ar' ? 'rtl' : 'ltr', transition: 'background 0.3s ease, color 0.3s ease'
     }}>
+      {/* CSS Animations pour les effets de mouvement */}
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
+        .animated-banner {
+          display: inline-block;
+          white-space: nowrap;
+          animation: marquee 18s linear infinite;
+        }
+        .product-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 20px 30px -10px rgba(2, 132, 199, 0.2);
+        }
+      `}</style>
+
+      {/* Banner Publicitaire / Annonce qui bouge (Ticker) */}
+      <div style={{
+        background: 'linear-gradient(90deg, #0284c7, #16a34a, #0f172a)',
+        color: '#ffffff', padding: '10px 0', borderRadius: '12px', marginBottom: '25px',
+        overflow: 'hidden', whiteSpace: 'nowrap', fontWeight: '700', fontSize: '0.9rem',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+      }}>
+        <div className="animated-banner">
+          🚀 تخفيضات كبرى على جميع تراخيص البرامج واشتراكات IPTV • 🎥 عروض حصرية على تركيب كاميرات المراقبة Dahua • 🛠️ ضمان جودة الخدمة والسرعة في التوصيل عبر واتساب!
+        </div>
+      </div>
+
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -307,27 +339,22 @@ export default function App() {
         </div>
       )}
 
-      {/* Header & Bar waza3iya fiha Boutton Dark Mode claire w bayna */}
+      {/* Header & Navbar */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: theme.cardBg, borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: `1px solid ${theme.border}`, position: 'relative' }}>
         
-        {/* Blassa dyal Contrôles: Dark Mode + Langues */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '10px' }}>
-          
-          {/* Bouton Dark Mode Oudiro wadh7 f l'coin */}
           <button
             onClick={() => setDarkMode(!darkMode)}
             style={{
               background: darkMode ? '#334155' : '#0f172a',
-              color: '#ffffff',
-              border: `1px solid ${theme.border}`, padding: '10px 18px', borderRadius: '12px',
+              color: '#ffffff', border: `1px solid ${theme.border}`, padding: '10px 18px', borderRadius: '12px',
               fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
           >
-            {darkMode ? '☀️ Mode Clair (النهاري)' : '🌙 Mode Sombre (الليلي)'}
+            {darkMode ? '☀️ Mode Clair' : '🌙 Mode Sombre'}
           </button>
 
-          {/* Les langues */}
           <div style={{ display: 'flex', gap: '6px' }}>
             {['fr', 'en', 'ar'].map((l) => (
               <button
@@ -370,7 +397,6 @@ export default function App() {
           La technologie au service de votre avenir. Informatique, caméras de surveillance, réseaux, IPTV et licences officielles.
         </p>
 
-        {/* Navbar */}
         <nav style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
           <button onClick={() => setCurrentPage('home')} style={navBtnStyle(currentPage === 'home', darkMode)}>
             {currentText.home}
@@ -421,7 +447,7 @@ export default function App() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
                   {popularProducts.map((product) => (
-                    <div key={`pop-${product.id}`} style={{
+                    <div key={`pop-${product.id}`} className="product-card" style={{
                       background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '20px', padding: '26px',
                       boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
                     }}>
@@ -464,7 +490,7 @@ export default function App() {
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
                 {testimonials.map((t) => (
-                  <div key={t.id} style={{ background: darkMode ? '#1e293b' : '#f8fafc', border: `1px solid ${theme.border}`, borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div key={t.id} className="product-card" style={{ background: darkMode ? '#1e293b' : '#f8fafc', border: `1px solid ${theme.border}`, borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
                       <div style={{ color: '#f59e0b', fontSize: '1.1rem', marginBottom: '10px' }}>★★★★★</div>
                       <p style={{ color: theme.textSecondary, fontSize: '0.92rem', fontStyle: 'italic', lineHeight: '1.5', marginBottom: '15px' }}>"{t.comment}"</p>
@@ -527,7 +553,7 @@ export default function App() {
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px', marginBottom: '60px' }}>
                 {filteredProducts.map((product) => (
-                  <div key={product.id} style={{
+                  <div key={product.id} className="product-card" style={{
                     background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '20px', padding: '26px',
                     boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
                   }}>
@@ -573,7 +599,7 @@ export default function App() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
               {servicesList.map((srv) => (
-                <div key={srv.id} style={{
+                <div key={srv.id} className="product-card" style={{
                   background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '20px', padding: '35px',
                   boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
                 }}>
