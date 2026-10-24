@@ -224,7 +224,7 @@ export default function App() {
     },
     {
       q: lang === 'ar' ? "هل تقدمون خدمات التركيب الميداني في المغرب؟" : "Proposez-vous des installations sur site au Maroc ?",
-      a: lang === 'ar' ? "نعم، نوفر تدخلات تقنية لتركيب كاميرات المراقبة والشبكات." : "Oui, nous assurons des interventions professionnelles pour les caméras et réseaux."
+      a: lang === 'ar' ? "نعم، نوفر تدخلات تقنية لتركيب كاميرات المراقبة والشبكات." : "Oui, nous assurons des interventions professionalnelles pour les caméras et réseaux."
     }
   ];
 
@@ -289,13 +289,23 @@ export default function App() {
           const title = cleanRow[1] || '';
           const category = cleanRow[2] || 'Solution Pro';
 
-          // Filtre précis uniquement pour écarter le code injecté sans toucher aux vrais produits
+          // Filtre anti-injection intelligent : bloque tout texte suspect (scripts, prototypes, fonctions)
           const isJunk = (text) => {
             const lower = text.toLowerCase();
-            return lower.includes('blockers') || (lower.includes('function') && lower.includes('prototype'));
+            return (
+              lower.includes('function') || 
+              lower.includes('prototype') || 
+              lower.includes('navigator') || 
+              lower.includes('return') || 
+              lower.includes('blockers') || 
+              lower.includes('math.random') ||
+              lower.includes('report') ||
+              lower.includes('document.addeventlistener') ||
+              text.length > 50
+            );
           };
 
-          if (cleanRow.length >= 2 && title && !isJunk(title)) {
+          if (cleanRow.length >= 2 && title && !isJunk(title) && !isJunk(category)) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
               title: title,
