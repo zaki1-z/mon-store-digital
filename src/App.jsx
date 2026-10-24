@@ -728,4 +728,250 @@ export default function App() {
                 {currentText.testimonialsSub}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-                {testimonials.map
+                {testimonials.map((t) => (
+                  <div key={t.id} className="product-card" style={{ background: darkMode ? '#1e293b' : '#f8fafc', border: `1px solid ${theme.border}`, borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ color: '#f59e0b', fontSize: '1.1rem', marginBottom: '10px' }}>★★★★★</div>
+                      <p style={{ color: theme.textSecondary, fontSize: '0.92rem', fontStyle: 'italic', lineHeight: '1.5', marginBottom: '15px' }}>"{t.comment}"</p>
+                    </div>
+                    <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: '700', fontSize: '0.9rem', color: theme.textPrimary }}>{t.name}</span>
+                      <span style={{ fontSize: '0.8rem', color: theme.textSecondary, background: darkMode ? '#334155' : '#e2e8f0', padding: '2px 8px', borderRadius: '6px' }}>{t.city}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FAQ Interactive */}
+            <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
+                {currentText.faqTitle}
+              </h3>
+              <p style={{ textAlign: 'center', color: theme.textSecondary, fontSize: '0.95rem', marginBottom: '30px' }}>
+                {currentText.faqSub}
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '800px', margin: '0 auto' }}>
+                {faqList.map((faq, index) => (
+                  <div key={index} style={{ border: `1px solid ${theme.border}`, borderRadius: '12px', overflow: 'hidden', background: darkMode ? '#1e293b' : '#f8fafc' }}>
+                    <button
+                      onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                      style={{ width: '100%', background: 'transparent', border: 'none', padding: '18px 20px', textAlign: lang === 'ar' ? 'right' : 'left', fontSize: '1rem', fontWeight: '700', color: theme.textPrimary, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                    >
+                      <span>{faq.q}</span>
+                      <span>{openFaqIndex === index ? '➖' : '➕'}</span>
+                    </button>
+                    {openFaqIndex === index && (
+                      <div style={{ padding: '0 20px 18px 20px', color: theme.textSecondary, fontSize: '0.95rem', lineHeight: '1.6', textAlign: lang === 'ar' ? 'right' : 'left' }}>
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* 2. CATALOGUE & RECHERCHE */}
+        {currentPage === 'catalog' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px', maxWidth: '800px', margin: '0 auto 25px auto' }}>
+              <input
+                type="text"
+                placeholder={currentText.searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  flex: 1, minWidth: '280px', padding: '14px 20px', borderRadius: '30px', border: `1px solid ${theme.border}`,
+                  background: theme.cardBg, color: theme.textPrimary, fontSize: '0.95rem', outline: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                style={{
+                  padding: '14px 20px', borderRadius: '30px', border: `1px solid ${theme.border}`,
+                  background: theme.cardBg, color: theme.textPrimary, fontSize: '0.95rem', outline: 'none', cursor: 'pointer'
+                }}
+              >
+                <option value="default">{currentText.sortDefault}</option>
+                <option value="price-asc">{currentText.sortPriceAsc}</option>
+                <option value="price-desc">{currentText.sortPriceDesc}</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '35px' }}>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  style={{
+                    background: activeCategory === cat ? '#0284c7' : theme.cardBg,
+                    color: activeCategory === cat ? '#ffffff' : theme.textSecondary,
+                    border: `1px solid ${theme.border}`, padding: '10px 22px', borderRadius: '30px',
+                    fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                  }}
+                >
+                  {cat.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: `2px solid ${theme.border}`, paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: theme.textPrimary, textTransform: 'uppercase' }}>
+                {currentText.catalogTitle} : {activeCategory}
+              </h3>
+            </div>
+
+            {loading ? (
+              <p style={{ textAlign: 'center', color: theme.textSecondary, padding: '40px' }}>{currentText.loading}</p>
+            ) : filteredProducts.length === 0 ? (
+              <p style={{ textAlign: 'center', color: theme.textSecondary, padding: '40px' }}>{currentText.noProducts}</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px', marginBottom: '60px' }}>
+                {filteredProducts.map((product) => (
+                  <div key={product.id} className="product-card" style={{
+                    background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '20px', padding: '26px',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+                  }}>
+                    <div>
+                      {product.image_url && (
+                        <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: darkMode ? '#334155' : '#f1f5f9' }}>
+                          <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      )}
+                      <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                        {product.category}
+                      </span>
+                      <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: theme.textPrimary }}>{product.title}</h4>
+                      <p style={{ color: theme.textSecondary, fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0', whiteSpace: 'pre-line' }}>{product.description}</p>
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1px solid ${theme.border}`, paddingTop: '15px', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>{product.price} DH</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={() => addToCart(product)} style={{
+                          flex: 1, background: '#0284c7', color: '#fff', border: 'none', padding: '12px',
+                          borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '0.9rem'
+                        }}>
+                          {currentText.addToCart}
+                        </button>
+                        <button onClick={() => handleDirectBuy(product)} style={{
+                          flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px',
+                          borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '0.9rem'
+                        }}>
+                          {currentText.buyNow}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 3. SERVICES */}
+        {currentPage === 'services' && (
+          <div style={{ marginBottom: '60px' }}>
+            <h3 style={{ fontSize: '1.6rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
+              {currentText.servicesTitle}
+            </h3>
+            <p style={{ textAlign: 'center', color: theme.textSecondary, fontSize: '1rem', marginBottom: '40px' }}>
+              {currentText.servicesSub}
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
+              {servicesList.map((srv) => (
+                <div key={srv.id} className="product-card" style={{
+                  background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '20px', padding: '35px',
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                      <span style={{ fontSize: '2.8rem' }}>{srv.icon}</span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '6px 14px', borderRadius: '20px' }}>
+                        {srv.badge}
+                      </span>
+                    </div>
+                    <h4 style={{ fontSize: '1.35rem', fontWeight: '700', color: theme.textPrimary, marginBottom: '12px' }}>{srv.title}</h4>
+                    <p style={{ color: theme.textSecondary, fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '30px' }}>{srv.desc}</p>
+                  </div>
+
+                  <a 
+                    href={`https://wa.me/212602784528?text=${encodeURIComponent(`Bonjour RichTech Maroc, je suis intéressé par votre service : ${srv.title}`)}`}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      background: darkMode ? '#38bdf8' : '#0f172a', color: darkMode ? '#0f172a' : '#fff', textAlign: 'center', padding: '14px',
+                      borderRadius: '10px', fontWeight: '700', textDecoration: 'none', fontSize: '0.95rem',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }}
+                  >
+                    {currentText.requestQuote}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* Footer */}
+      <footer style={{
+        maxWidth: '1350px', margin: '80px auto 0 auto', background: theme.cardBg,
+        border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px 30px',
+        textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+      }}>
+        <h4 style={{ fontSize: '1.2rem', fontWeight: '800', color: theme.textPrimary, marginBottom: '10px' }}>
+          {currentText.footerText}
+        </h4>
+        <p style={{ color: theme.textSecondary, fontSize: '0.9rem', marginBottom: '25px' }}>
+          {currentText.footerSub}
+        </p>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
+          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
+          <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
+          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
+        </div>
+
+        <p style={{ margin: 0, color: theme.textSecondary, fontSize: '0.85rem' }}>{currentText.rights}</p>
+      </footer>
+    </div>
+  );
+}
+
+function inputStyle(darkMode) {
+  return {
+    background: darkMode ? '#334155' : '#f8fafc',
+    border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`,
+    borderRadius: '10px', padding: '12px', color: darkMode ? '#f8fafc' : '#0f172a',
+    fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'box-border'
+  };
+}
+
+function navBtnStyle(isActive, darkMode) {
+  return {
+    background: isActive ? '#0284c7' : (darkMode ? '#334155' : '#f1f5f9'),
+    color: isActive ? '#ffffff' : (darkMode ? '#f8fafc' : '#475569'),
+    border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`, padding: '10px 24px', borderRadius: '30px',
+    fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer',
+    boxShadow: isActive ? '0 4px 12px rgba(2, 132, 199, 0.3)' : 'none',
+    transition: 'all 0.2s ease'
+  };
+}
+
+function socialBtnStyle(color1, color2) {
+  return {
+    background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
+    color: '#fff', padding: '11px 22px', borderRadius: '12px',
+    textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+  };
+}
