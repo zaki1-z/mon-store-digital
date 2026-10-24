@@ -205,13 +205,15 @@ export default function App() {
 
           const cleanRow = row.map(val => val.replace(/^["'](.+)["']$/, '$1').trim());
 
-          if (cleanRow.length >= 5 && cleanRow[1]) {
+          // Vérification robuste pour s'assurer que le prix est un nombre valide
+          const parsedPrice = Number(cleanRow[4]);
+          if (cleanRow.length >= 5 && cleanRow[1] && !isNaN(parsedPrice)) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
               title: cleanRow[1] || '',
               category: cleanRow[2] || 'Solution Pro',
               description: cleanRow[3] || 'Solution professionnelle certifiée RichTech Maroc.',
-              price: Number(cleanRow[4]) || 0,
+              price: parsedPrice,
               image_url: cleanRow[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
             });
           }
@@ -266,7 +268,6 @@ export default function App() {
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden',
       direction: lang === 'ar' ? 'rtl' : 'ltr', transition: 'background 0.3s ease, color 0.3s ease'
     }}>
-      {/* CSS Animations pour les effets de mouvement */}
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(100%); }
@@ -286,7 +287,6 @@ export default function App() {
         }
       `}</style>
 
-      {/* Banner Publicitaire / Annonce qui bouge (Ticker) */}
       <div style={{
         background: 'linear-gradient(90deg, #0284c7, #16a34a, #0f172a)',
         color: '#ffffff', padding: '10px 0', borderRadius: '12px', marginBottom: '25px',
@@ -339,7 +339,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Header & Navbar */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: theme.cardBg, borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: `1px solid ${theme.border}`, position: 'relative' }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '10px' }}>
@@ -410,10 +409,8 @@ export default function App() {
         </nav>
       </header>
 
-      {/* Main Pages */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
 
-        {/* 1. HOME */}
         {currentPage === 'home' && (
           <div>
             <div style={{
@@ -435,7 +432,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Populaires */}
             {!loading && popularProducts.length > 0 && (
               <div style={{ marginBottom: '60px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: `2px solid ${theme.border}`, paddingBottom: '12px' }}>
@@ -480,7 +476,6 @@ export default function App() {
               </div>
             )}
 
-            {/* Testimonials */}
             <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
                 {currentText.testimonialsTitle}
@@ -506,7 +501,6 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. CATALOGUE & RECHERCHE */}
         {currentPage === 'catalog' && (
           <div>
             <div style={{ marginBottom: '25px', maxWidth: '600px', margin: '0 auto 25px auto' }}>
@@ -587,7 +581,6 @@ export default function App() {
           </div>
         )}
 
-        {/* 3. SERVICES */}
         {currentPage === 'services' && (
           <div style={{ marginBottom: '60px' }}>
             <h3 style={{ fontSize: '1.6rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
@@ -634,7 +627,6 @@ export default function App() {
 
       </main>
 
-      {/* Footer */}
       <footer style={{
         maxWidth: '1350px', margin: '80px auto 0 auto', background: theme.cardBg,
         border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px 30px',
