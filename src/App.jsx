@@ -205,15 +205,14 @@ export default function App() {
 
           const cleanRow = row.map(val => val.replace(/^["'](.+)["']$/, '$1').trim());
 
-          // Vérification robuste pour s'assurer que le prix est un nombre valide
-          const parsedPrice = Number(cleanRow[4]);
-          if (cleanRow.length >= 5 && cleanRow[1] && !isNaN(parsedPrice)) {
+          // Parsing souple : même si le prix n'est pas parfait, on affiche le produit quand même pour ne rien bloquer
+          if (cleanRow.length >= 2 && cleanRow[1]) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
               title: cleanRow[1] || '',
               category: cleanRow[2] || 'Solution Pro',
               description: cleanRow[3] || 'Solution professionnelle certifiée RichTech Maroc.',
-              price: parsedPrice,
+              price: Number(cleanRow[4]) || 0,
               image_url: cleanRow[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
             });
           }
