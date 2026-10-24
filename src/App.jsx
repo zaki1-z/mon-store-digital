@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fsf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fysf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -87,9 +87,8 @@ export default function App() {
     setClientPhone('');
   };
 
-  // Grouper les produits par catégorie dynamiquement
   const categoriesMap = products.reduce((acc, product) => {
-    const cat = product.category || 'Autres';
+    const cat = (product.category && typeof product.category === 'string') ? product.category.trim() : 'Autres';
     if (!acc[cat]) {
       acc[cat] = [];
     }
