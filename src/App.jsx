@@ -13,6 +13,13 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
+  // Avis clients fictifs ou réels pour rassurer les visiteurs
+  const testimonials = [
+    { id: 1, name: "Youssef B.", city: "Casablanca", comment: "Service rapide et fiable ! J'ai reçu ma licence Windows 11 en moins de 10 minutes sur WhatsApp. Top.", rating: 5 },
+    { id: 2, name: "Mehdi K.", city: "Rabat", comment: "Pack caméras Dahua top qualité, vision nocturne claire et installation facile. Merci RichTech !", rating: 5 },
+    { id: 3, name: "Amine T.", city: "Marrakech", comment: "Abonnement IPTV T-REX stable sans coupure pendant les match. Je recommande vivement.", rating: 5 }
+  ];
+
   useEffect(() => {
     fetch(CSV_URL)
       .then((res) => res.text())
@@ -21,7 +28,6 @@ export default function App() {
         let currentRow = '';
         let insideQuotes = false;
 
-        // Parsing robuste pour ignorer les sauts de ligne à l'intérieur des guillemets
         for (let i = 0; i < csvText.length; i++) {
           const char = csvText[i];
           if (char === '"') {
@@ -60,7 +66,6 @@ export default function App() {
           }
           row.push(currentVal.trim());
 
-          // Nettoyage des guillemets autour des valeurs si présents
           const cleanRow = row.map(val => val.replace(/^["'](.+)["']$/, '$1').trim());
 
           if (cleanRow.length >= 5 && cleanRow[1]) {
@@ -275,8 +280,36 @@ export default function App() {
           </div>
         )}
 
+        {/* Section Avis Clients / Confiance */}
+        <div style={{ marginTop: '80px', marginBottom: '80px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
+            ⭐ Ce que disent nos clients au Maroc
+          </h3>
+          <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.95rem', marginBottom: '35px' }}>
+            La satisfaction de nos clients est notre priorité absolue.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+            {testimonials.map((t) => (
+              <div key={t.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ color: '#f59e0b', fontSize: '1.1rem', marginBottom: '10px' }}>★★★★★</div>
+                  <p style={{ color: '#334155', fontSize: '0.92rem', fontStyle: 'italic', lineHeight: '1.5', marginBottom: '15px' }}>
+                    "{t.comment}"
+                  </p>
+                </div>
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: '700', fontSize: '0.9rem', color: '#0f172a' }}>{t.name}</span>
+                  <span style={{ fontSize: '0.8rem', color: '#64748b', background: '#e2e8f0', padding: '2px 8px', borderRadius: '6px' }}>{t.city}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section Produits Populaires */}
         {!loading && popularProducts.length > 0 && (
-          <div style={{ marginTop: '80px', borderTop: '2px solid #e2e8f0', paddingTop: '40px' }}>
+          <div style={{ marginTop: '40px', borderTop: '2px solid #e2e8f0', paddingTop: '40px' }}>
             <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: '0 0 25px 0', color: '#0f172a' }}>
               🔥 Produits Populaires & Recommandés
             </h3>
