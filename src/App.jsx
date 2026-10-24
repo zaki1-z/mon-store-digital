@@ -2,13 +2,114 @@ import React, { useState, useEffect } from 'react';
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fysf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
 
+// Dictionnaire des traductions
+const t = {
+  fr: {
+    home: "🏠 Accueil",
+    catalog: "🛍️ Catalogue & Produits",
+    services: "🛠️ Nos Services",
+    heroTitle: "Bienvenue chez RichTech Maroc 🚀",
+    heroDesc: "Votre partenaire de confiance pour toutes vos solutions informatiques, abonnements IPTV, licences officielles et installations de sécurité.",
+    seeCatalog: "Voir le Catalogue 🛍️",
+    discoverServices: "Découvrir nos Services 🛠️",
+    popularTitle: "🔥 Produits Populaires & Recommandés",
+    seeAll: "Voir tout →",
+    testimonialsTitle: "⭐ Ce que disent nos clients au Maroc",
+    testimonialsSub: "La satisfaction de nos clients est notre priorité absolue.",
+    catalogTitle: "⚡ Catalogue",
+    searchPlaceholder: "🔍 Rechercher un produit (ex: Windows, Dahua, IPTV...)",
+    loading: "Chargement du catalogue...",
+    noProducts: "Aucun produit trouvé.",
+    buy: "Acheter 🛒",
+    servicesTitle: "🛠️ Nos Prestations & Services Techniques",
+    servicesSub: "Interventions professionnelles sur terrain pour particuliers et entreprises au Maroc.",
+    requestQuote: "Demander un devis 💬",
+    footerText: "RichTech Maroc • Solutions Informatiques & Sécurité",
+    footerSub: "Contactez-nous directement sur nos réseaux officiels :",
+    rights: "© 2026 RichTech Maroc. Tous droits réservés.",
+    modalTitle: "🛒 Valider votre commande",
+    product: "Produit :",
+    name: "Nom",
+    firstName: "Prénom",
+    email: "Adresse e-mail",
+    phone: "Numéro de téléphone",
+    whatsappBtn: "Envoyer la commande sur WhatsApp 🚀",
+    cancel: "Annuler ✕"
+  },
+  en: {
+    home: "🏠 Home",
+    catalog: "🛍️ Catalog & Products",
+    services: "🛠️ Our Services",
+    heroTitle: "Welcome to RichTech Morocco 🚀",
+    heroDesc: "Your trusted partner for all IT solutions, IPTV subscriptions, official software licenses, and security installations.",
+    seeCatalog: "View Catalog 🛍️",
+    discoverServices: "Discover Our Services 🛠️",
+    popularTitle: "🔥 Popular & Recommended Products",
+    seeAll: "See all →",
+    testimonialsTitle: "⭐ What our clients in Morocco say",
+    testimonialsSub: "Client satisfaction is our top priority.",
+    catalogTitle: "⚡ Catalog",
+    searchPlaceholder: "🔍 Search a product (e.g. Windows, Dahua, IPTV...)",
+    loading: "Loading catalog...",
+    noProducts: "No products found.",
+    buy: "Buy 🛒",
+    servicesTitle: "🛠️ Our Technical Services",
+    servicesSub: "Professional on-site interventions for individuals and businesses in Morocco.",
+    requestQuote: "Request a quote 💬",
+    footerText: "RichTech Morocco • IT Solutions & Security",
+    footerSub: "Contact us directly on our official networks:",
+    rights: "© 2026 RichTech Morocco. All rights reserved.",
+    modalTitle: "🛒 Complete Your Order",
+    product: "Product:",
+    name: "Last Name",
+    firstName: "First Name",
+    email: "Email Address",
+    phone: "Phone Number",
+    whatsappBtn: "Send order via WhatsApp 🚀",
+    cancel: "Cancel ✕"
+  },
+  ar: {
+    home: "🏠 الرئيسية",
+    catalog: "🛍️ الكتالوج والمنتجات",
+    services: "🛠️ خدماتنا",
+    heroTitle: "مرحباً بكم في ريتش تك المغرب 🚀",
+    heroDict: "شريكك الموثوق لجميع حلول تكنولوجيا المعلومات، اشتراكات IPTV، الرخص الرسمية، وأنظمة الحماية.",
+    seeCatalog: "تصفح الكتالوج 🛍️",
+    discoverServices: "اكتشف خدماتنا 🛠️",
+    popularTitle: "🔥 المنتجات الأكثر طلباً وموصى بها",
+    seeAll: "عرض الكل ←",
+    testimonialsTitle: "⭐ آراء عملائنا في المغرب",
+    testimonialsSub: "رضا عملائنا هو أولويتنا القصوى.",
+    catalogTitle: "⚡ الكتالوج",
+    searchPlaceholder: "🔍 ابحث عن منتج (مثل: Windows, Dahua, IPTV...)",
+    loading: "جاري تحميل الكتالوج...",
+    noProducts: "لا توجد منتجات مطابقة.",
+    buy: "شراء 🛒",
+    servicesTitle: "🛠️ خدماتنا والتدخلات التقنية",
+    servicesSub: "تدخلات مهنية في الميدان للأفراد والشركات في المغرب.",
+    requestQuote: "اطلب تسعيرة 💬",
+    footerText: "ريتش تك المغرب • حلول إعلامية وأمنية",
+    footerSub: "تواصل معنا مباشرة عبر شبكاتنا الرسمية:",
+    rights: "© 2026 ريتش تك المغرب. جميع الحقوق محفوظة.",
+    modalTitle: "🛒 تأكيد طلبك",
+    product: "المنتج:",
+    name: "النسب",
+    firstName: "الإسم الشخصي",
+    email: "البريد الإلكتروني",
+    phone: "رقم الهاتق",
+    whatsappBtn: "إرسال الطلب عبر واتساب 🚀",
+    cancel: "إلغاء ✕"
+  }
+};
+
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Navigation entre les pages: 'home', 'catalog', 'services'
   const [currentPage, setCurrentPage] = useState('home');
   const [activeCategory, setActiveCategory] = useState('TOUS');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [lang, setLang] = useState('fr'); // 'fr', 'en', 'ar'
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [clientNom, setClientNom] = useState('');
@@ -16,27 +117,29 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
+  const currentText = t[lang];
+
   const servicesList = [
     {
       id: 1,
-      title: "Installation Réseaux & Câblage",
-      desc: "Configuration de routeurs, switches, points d'accès Wi-Fi et câblage structuré pour entreprises, bureaux et résidences.",
+      title: lang === 'ar' ? "تركيب الشبكات والكابلات" : "Installation Réseaux & Câblage",
+      desc: lang === 'ar' ? "إعداد الراوتر، السويتش، نقاط الوصول Wi-Fi والربط للشركات والمكاتب والمنازل." : "Configuration de routeurs, switches, points d'accès Wi-Fi et câblage structuré.",
       icon: "🌐",
-      badge: "Sur Devis"
+      badge: lang === 'ar' ? "حسب الطلب" : "Sur Devis"
     },
     {
       id: 2,
-      title: "Installation Caméras de Surveillance",
-      desc: "Pose et configuration de systèmes de vidéosurveillance (IP & analogique) avec vision nocturne et accès direct sur votre smartphone.",
+      title: lang === 'ar' ? "تركيب كاميرات المراقبة" : "Installation Caméras de Surveillance",
+      desc: lang === 'ar' ? "تركيب وإعداد نظام المراقبة مع الرؤية الليلية والمتابعة المباشرة عبر الهاتف." : "Pose et configuration de systèmes de vidéosurveillance avec accès smartphone.",
       icon: "🎥",
-      badge: "Clé en main"
+      badge: lang === 'ar' ? "جاهز للاستخدام" : "Clé en main"
     },
     {
       id: 3,
-      title: "Maintenance Informatique & Matériel",
-      desc: "Diagnostic, réparation de cartes mères (micro-soudure), optimisation PC/PC portables et nettoyage de systèmes informatiques.",
+      title: lang === 'ar' ? "الصيانة الإعلامية والمادية" : "Maintenance Informatique & Matériel",
+      desc: lang === 'ar' ? "تشخيص وإصلاح اللوحات الأم (Micro-soudure)، تحسين الحواسيب وتنظيف الأنظمة." : "Diagnostic, réparation de cartes mères et optimisation PC/PC portables.",
       icon: "🛠️",
-      badge: "Diagnostic pro"
+      badge: lang === 'ar' ? "تشخيص محترف" : "Diagnostic pro"
     }
   ];
 
@@ -136,24 +239,25 @@ export default function App() {
     window.open(`https://wa.me/${whatsappNumber}?text=${textMessage}`, '_blank');
 
     setSelectedProduct(null);
-    setClientNom('');
-    setClientPrenom('');
-    setClientEmail('');
-    setClientPhone('');
+    setClientNom(''); setClientPrenom(''); setClientEmail(''); setClientPhone('');
   };
 
   const categories = ['TOUS', ...Array.from(new Set(products.map(p => p.category)))];
 
-  const filteredProducts = activeCategory === 'TOUS' 
-    ? products 
-    : products.filter(p => p.category.toLowerCase() === activeCategory.toLowerCase());
+  // Filtrage par catégorie ET par recherche en direct
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = activeCategory === 'TOUS' || p.category.toLowerCase() === activeCategory.toLowerCase();
+    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const popularProducts = products.slice(0, 3);
 
   return (
     <div style={{
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
-      fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden',
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
     }}>
       {/* Modal Commande WhatsApp */}
       {selectedProduct && (
@@ -165,25 +269,25 @@ export default function App() {
           <div style={{
             background: '#ffffff', border: '1px solid #e2e8f0',
             borderRadius: '20px', padding: '30px', width: '100%', maxWidth: '450px',
-            boxShadow: '0 25px 50px rgba(0,0,0,0.15)'
+            boxShadow: '0 25px 50px rgba(0,0,0,0.15)', textAlign: lang === 'ar' ? 'right' : 'left'
           }}>
-            <h3 style={{ color: '#0f172a', marginBottom: '10px', fontSize: '1.4rem' }}>🛒 Valider votre commande</h3>
+            <h3 style={{ color: '#0f172a', marginBottom: '10px', fontSize: '1.4rem' }}>{currentText.modalTitle}</h3>
             <p style={{ color: '#0284c7', fontSize: '0.95rem', marginBottom: '20px' }}>
-              Produit : <strong>{selectedProduct.title}</strong> ({selectedProduct.price} DH)
+              {currentText.product} <strong>{selectedProduct.title}</strong> ({selectedProduct.price} DH)
             </p>
 
             <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <input type="text" placeholder="Nom" value={clientNom} onChange={e => setClientNom(e.target.value)} style={inputStyleLight} required />
-              <input type="text" placeholder="Prénom" value={clientPrenom} onChange={e => setClientPrenom(e.target.value)} style={inputStyleLight} required />
-              <input type="email" placeholder="Adresse e-mail" value={clientEmail} onChange={e => setClientEmail(e.target.value)} style={inputStyleLight} required />
-              <input type="tel" placeholder="Numéro de téléphone" value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={inputStyleLight} required />
+              <input type="text" placeholder={currentText.name} value={clientNom} onChange={e => setClientNom(e.target.value)} style={inputStyleLight} required />
+              <input type="text" placeholder={currentText.firstName} value={clientPrenom} onChange={e => setClientPrenom(e.target.value)} style={inputStyleLight} required />
+              <input type="email" placeholder={currentText.email} value={clientEmail} onChange={e => setClientEmail(e.target.value)} style={inputStyleLight} required />
+              <input type="tel" placeholder={currentText.phone} value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={inputStyleLight} required />
 
               <button type="submit" style={{
                 background: '#16a34a', color: '#fff', border: 'none', padding: '14px', borderRadius: '10px',
                 fontWeight: '700', fontSize: '1rem', cursor: 'pointer', marginTop: '10px',
                 boxShadow: '0 4px 15px rgba(22, 163, 74, 0.3)'
               }}>
-                Envoyer la commande sur WhatsApp 🚀
+                {currentText.whatsappBtn}
               </button>
             </form>
 
@@ -191,14 +295,33 @@ export default function App() {
               background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer',
               marginTop: '15px', width: '100%', textAlign: 'center', fontSize: '0.9rem'
             }}>
-              Annuler ✕
+              {currentText.cancel}
             </button>
           </div>
         </div>
       )}
 
-      {/* Header Principal avec Navbar */}
-      <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+      {/* Header & Navbar & Selecteur de Langue */}
+      <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0', position: 'relative' }}>
+        
+        {/* Sélecteur de Langue en haut */}
+        <div style={{ position: 'absolute', top: '20px', [lang === 'ar' ? 'left' : 'right']: '25px', display: 'flex', gap: '6px' }}>
+          {['fr', 'en', 'ar'].map((l) => (
+            <button
+              key={l}
+              onClick={() => setLang(l)}
+              style={{
+                background: lang === l ? '#0f172a' : '#f1f5f9',
+                color: lang === l ? '#fff' : '#0f172a',
+                border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px',
+                fontSize: '0.8rem', fontWeight: '750', cursor: 'pointer', textTransform: 'uppercase'
+              }}
+            >
+              {l === 'ar' ? 'العربية' : l}
+            </button>
+          ))}
+        </div>
+
         <div style={{
           width: '110px', height: '110px', margin: '0 auto 15px auto',
           background: '#f1f5f9', borderRadius: '50%', display: 'flex',
@@ -223,64 +346,52 @@ export default function App() {
           La technologie au service de votre avenir. Informatique, caméras de surveillance, réseaux, IPTV et licences officielles.
         </p>
 
-        {/* Navbar Principale */}
+        {/* Navbar */}
         <nav style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
-          <button 
-            onClick={() => setCurrentPage('home')}
-            style={navBtnStyle(currentPage === 'home')}
-          >
-            🏠 Accueil
+          <button onClick={() => setCurrentPage('home')} style={navBtnStyle(currentPage === 'home')}>
+            {currentText.home}
           </button>
-          <button 
-            onClick={() => { setCurrentPage('catalog'); setActiveCategory('TOUS'); }}
-            style={navBtnStyle(currentPage === 'catalog')}
-          >
-            🛍️ Catalogue & Produits
+          <button onClick={() => { setCurrentPage('catalog'); setActiveCategory('TOUS'); }} style={navBtnStyle(currentPage === 'catalog')}>
+            {currentText.catalog}
           </button>
-          <button 
-            onClick={() => setCurrentPage('services')}
-            style={navBtnStyle(currentPage === 'services')}
-          >
-            🛠️ Nos Services
+          <button onClick={() => setCurrentPage('services')} style={navBtnStyle(currentPage === 'services')}>
+            {currentText.services}
           </button>
         </nav>
       </header>
 
-      {/* Contenu dynamique selon la page active */}
+      {/* Main Pages */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
 
-        {/* 1. PAGE ACCUEIL */}
+        {/* 1. HOME */}
         {currentPage === 'home' && (
           <div>
-            {/* Bannière de Bienvenue */}
             <div style={{
               background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
               color: '#ffffff', borderRadius: '24px', padding: '50px 40px', textAlign: 'center',
               marginBottom: '50px', boxShadow: '0 20px 25px -5px rgba(15, 23, 42, 0.1)'
             }}>
-              <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '15px' }}>Bienvenue chez RichTech Maroc 🚀</h2>
+              <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '15px' }}>{currentText.heroTitle}</h2>
               <p style={{ fontSize: '1.1rem', color: '#cbd5e1', maxWidth: '700px', margin: '0 auto 25px auto', lineHeight: '1.6' }}>
-                Votre partenaire de confiance pour toutes vos solutions informatiques, abonnements IPTV, licences officielles et installations de sécurité.
+                {currentText.heroDesc}
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
                 <button onClick={() => { setCurrentPage('catalog'); setActiveCategory('TOUS'); }} style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '12px 25px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', fontSize: '1rem' }}>
-                  Voir le Catalogue 🛍️
+                  {currentText.seeCatalog}
                 </button>
                 <button onClick={() => setCurrentPage('services')} style={{ background: 'transparent', color: '#fff', border: '2px solid #cbd5e1', padding: '12px 25px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', fontSize: '1rem' }}>
-                  Découvrir nos Services 🛠️
+                  {currentText.discoverServices}
                 </button>
               </div>
             </div>
 
-            {/* Aperçu Produits Populaires */}
+            {/* Populaires */}
             {!loading && popularProducts.length > 0 && (
               <div style={{ marginBottom: '60px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
-                  <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
-                    🔥 Produits Populaires & Recommandés
-                  </h3>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>{currentText.popularTitle}</h3>
                   <button onClick={() => { setCurrentPage('catalog'); setActiveCategory('TOUS'); }} style={{ background: 'transparent', border: 'none', color: '#0284c7', fontWeight: '700', cursor: 'pointer' }}>
-                    Voir tout →
+                    {currentText.seeAll}
                   </button>
                 </div>
 
@@ -310,7 +421,7 @@ export default function App() {
                           width: '100%', background: '#0f172a', color: '#fff', border: 'none', padding: '13px',
                           borderRadius: '10px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
                         }}>
-                          Acheter 🛒
+                          {currentText.buy}
                         </button>
                       </div>
                     </div>
@@ -319,13 +430,13 @@ export default function App() {
               </div>
             )}
 
-            {/* Avis Clients */}
+            {/* Testimonials */}
             <div style={{ marginBottom: '60px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
-                ⭐ Ce que disent nos clients au Maroc
+                {currentText.testimonialsTitle}
               </h3>
               <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.95rem', marginBottom: '35px' }}>
-                La satisfaction de nos clients est notre priorité absolue.
+                {currentText.testimonialsSub}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
                 {testimonials.map((t) => (
@@ -345,9 +456,24 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. PAGE CATALOGUE & PRODUITS */}
+        {/* 2. CATALOGUE & RECHERCHE EN DIRECT */}
         {currentPage === 'catalog' && (
           <div>
+            {/* Barre de Recherche en direct */}
+            <div style={{ marginBottom: '25px', maxWidth: '600px', margin: '0 auto 25px auto' }}>
+              <input
+                type="text"
+                placeholder={currentText.searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%', padding: '14px 20px', borderRadius: '30px', border: '1px solid #cbd5e1',
+                  background: '#fff', fontSize: '0.95rem', outline: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
             {/* Filtres par catégories */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '35px' }}>
               {categories.map((cat) => (
@@ -368,14 +494,14 @@ export default function App() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
               <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a', textTransform: 'uppercase' }}>
-                ⚡ Catalogue : {activeCategory}
+                {currentText.catalogTitle} : {activeCategory}
               </h3>
             </div>
 
             {loading ? (
-              <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Chargement du catalogue...</p>
+              <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>{currentText.loading}</p>
             ) : filteredProducts.length === 0 ? (
-              <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit disponible dans cette catégorie.</p>
+              <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>{currentText.noProducts}</p>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px', marginBottom: '60px' }}>
                 {filteredProducts.map((product) => (
@@ -403,7 +529,7 @@ export default function App() {
                         width: '100%', background: '#0f172a', color: '#fff', border: 'none', padding: '13px',
                         borderRadius: '10px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
                       }}>
-                        Acheter 🛒
+                        {currentText.buy}
                       </button>
                     </div>
                   </div>
@@ -413,14 +539,14 @@ export default function App() {
           </div>
         )}
 
-        {/* 3. PAGE NOS SERVICES */}
+        {/* 3. SERVICES */}
         {currentPage === 'services' && (
           <div style={{ marginBottom: '60px' }}>
             <h3 style={{ fontSize: '1.6rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
-              🛠️ Nos Prestations & Services Techniques
+              {currentText.servicesTitle}
             </h3>
             <p style={{ textAlign: 'center', color: '#64748b', fontSize: '1rem', marginBottom: '40px' }}>
-              Interventions professionnelles sur terrain pour particuliers et entreprises au Maroc.
+              {currentText.servicesSub}
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
@@ -450,7 +576,7 @@ export default function App() {
                       boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
                     }}
                   >
-                    Demander un devis 💬
+                    {currentText.requestQuote}
                   </a>
                 </div>
               ))}
@@ -467,10 +593,10 @@ export default function App() {
         textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
       }}>
         <h4 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
-          RichTech Maroc • Solutions Informatiques & Sécurité
+          {currentText.footerText}
         </h4>
         <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '25px' }}>
-          Contactez-nous directement sur nos réseaux officiels :
+          {currentText.footerSub}
         </p>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
@@ -479,7 +605,7 @@ export default function App() {
           <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
         </div>
 
-        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 RichTech Maroc. Tous droits réservés.</p>
+        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>{currentText.rights}</p>
       </footer>
     </div>
   );
