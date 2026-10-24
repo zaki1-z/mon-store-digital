@@ -17,13 +17,33 @@ export default function App() {
     fetch(CSV_URL)
       .then((res) => res.text())
       .then((csvText) => {
-        const lines = csvText.split('\n');
+        const lines = [];
+        let currentRow = '';
+        let insideQuotes = false;
+
+        // Parsing robuste pour ignorer les sauts de ligne à l'intérieur des guillemets
+        for (let i = 0; i < csvText.length; i++) {
+          const char = csvText[i];
+          if (char === '"') {
+            insideQuotes = !insideQuotes;
+            currentRow += char;
+          } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+            if (currentRow.trim() !== '') {
+              lines.push(currentRow);
+            }
+            currentRow = '';
+          } else {
+            currentRow += char;
+          }
+        }
+        if (currentRow.trim() !== '') {
+          lines.push(currentRow);
+        }
+
         const parsedProducts = [];
 
         for (let i = 1; i < lines.length; i++) {
-          const line = lines[i].trim();
-          if (!line) continue;
-
+          const line = lines[i];
           const row = [];
           let inQuotes = false;
           let currentVal = '';
@@ -40,14 +60,17 @@ export default function App() {
           }
           row.push(currentVal.trim());
 
-          if (row.length >= 2 && row[1]) {
+          // Nettoyage des guillemets autour des valeurs si présents
+          const cleanRow = row.map(val => val.replace(/^["'](.+)["']$/, '$1').trim());
+
+          if (cleanRow.length >= 5 && cleanRow[1]) {
             parsedProducts.push({
-              id: row[0] || i.toString(),
-              title: row[1] || '',
-              category: (row[2] && typeof row[2] === 'string') ? row[2].trim() : 'Solution Pro',
-              description: row[3] || 'Solution professionnelle certifiée RichTech Maroc.',
-              price: Number(row[4]) || 0,
-              image_url: row[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
+              id: cleanRow[0] || i.toString(),
+              title: cleanRow[1] || '',
+              category: cleanRow[2] || 'Solution Pro',
+              description: cleanRow[3] || 'Solution professionnelle certifiée RichTech Maroc.',
+              price: Number(cleanRow[4]) || 0,
+              image_url: cleanRow[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
             });
           }
         }
@@ -168,7 +191,6 @@ export default function App() {
           La technologie au service de votre avenir. Informatique, caméras de surveillance, réseaux, IPTV et licences officielles.
         </p>
 
-        {/* Barre de navigation des catégories */}
         <nav style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '30px' }}>
           {categories.map((cat) => (
             <button
@@ -228,7 +250,7 @@ export default function App() {
                     {product.title}
                   </h4>
                   
-                  <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
+                  <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0', whiteSpace: 'pre-line' }}>
                     {product.description}
                   </p>
                 </div>
@@ -253,7 +275,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Section Suggestions / Produits Populaires */}
         {!loading && popularProducts.length > 0 && (
           <div style={{ marginTop: '80px', borderTop: '2px solid #e2e8f0', paddingTop: '40px' }}>
             <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: '0 0 25px 0', color: '#0f172a' }}>
@@ -283,7 +304,7 @@ export default function App() {
                       {product.title}
                     </h4>
                     
-                    <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
+                    <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0', whiteSpace: 'pre-line' }}>
                       {product.description}
                     </p>
                   </div>
