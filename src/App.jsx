@@ -5,6 +5,9 @@ const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2p
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Navigation entre les pages: 'home', 'catalog', 'services'
+  const [currentPage, setCurrentPage] = useState('home');
   const [activeCategory, setActiveCategory] = useState('TOUS');
 
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -13,7 +16,6 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // Services techniques offerts par RichTech Maroc
   const servicesList = [
     {
       id: 1,
@@ -153,6 +155,7 @@ export default function App() {
       minHeight: '100vh', background: '#f8fafc', color: '#0f172a',
       fontFamily: 'Inter, system-ui, -apple-system, sans-serif', padding: '30px 40px', overflowX: 'hidden'
     }}>
+      {/* Modal Commande WhatsApp */}
       {selectedProduct && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -176,8 +179,7 @@ export default function App() {
               <input type="tel" placeholder="Numéro de téléphone" value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={inputStyleLight} required />
 
               <button type="submit" style={{
-                background: '#16a34a',
-                color: '#fff', border: 'none', padding: '14px', borderRadius: '10px',
+                background: '#16a34a', color: '#fff', border: 'none', padding: '14px', borderRadius: '10px',
                 fontWeight: '700', fontSize: '1rem', cursor: 'pointer', marginTop: '10px',
                 boxShadow: '0 4px 15px rgba(22, 163, 74, 0.3)'
               }}>
@@ -195,245 +197,270 @@ export default function App() {
         </div>
       )}
 
-      {/* Header & Navbar */}
-      <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+      {/* Header Principal avec Navbar */}
+      <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         <div style={{
-          width: '130px', height: '130px', margin: '0 auto 20px auto',
+          width: '110px', height: '110px', margin: '0 auto 15px auto',
           background: '#f1f5f9', borderRadius: '50%', display: 'flex',
           flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
           border: '3px solid #0f172a', boxShadow: '0 10px 25px rgba(0,0,0,0.08)', padding: '10px'
         }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: '900', margin: '0 0 4px 0', color: '#0f172a', lineHeight: '1.1' }}>
+          <h2 style={{ fontSize: '1rem', fontWeight: '900', margin: '0 0 2px 0', color: '#0f172a', lineHeight: '1.1' }}>
             RichTech
           </h2>
-          <span style={{ fontSize: '0.75rem', fontWeight: '700', letterSpacing: '2px', color: '#0f172a', marginBottom: '8px' }}>
+          <span style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '2px', color: '#0f172a', marginBottom: '6px' }}>
             MAROC
           </span>
-          <div style={{ display: 'flex', gap: '4px', fontSize: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '3px', fontSize: '0.7rem' }}>
             <span>🎥</span><span>⌨️</span><span>📱</span><span>📺</span>
           </div>
         </div>
 
-        <h1 style={{ fontSize: '2.4rem', fontWeight: '800', margin: '0 0 10px 0', color: '#0f172a' }}>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 8px 0', color: '#0f172a' }}>
           RichTech Maroc
         </h1>
-        <p style={{ color: '#475569', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.5' }}>
+        <p style={{ color: '#475569', fontSize: '1rem', maxWidth: '600px', margin: '0 auto 25px auto', lineHeight: '1.5' }}>
           La technologie au service de votre avenir. Informatique, caméras de surveillance, réseaux, IPTV et licences officielles.
         </p>
 
-        <nav style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '30px' }}>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              style={{
-                background: activeCategory === cat ? '#0f172a' : '#f1f5f9',
-                color: activeCategory === cat ? '#ffffff' : '#475569',
-                border: '1px solid #cbd5e1',
-                padding: '10px 22px',
-                borderRadius: '30px',
-                fontWeight: '700',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeCategory === cat ? '0 4px 12px rgba(15, 23, 42, 0.2)' : 'none'
-              }}
-            >
-              {cat.toUpperCase()}
-            </button>
-          ))}
+        {/* Navbar Principale */}
+        <nav style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
+          <button 
+            onClick={() => setCurrentPage('home')}
+            style={navBtnStyle(currentPage === 'home')}
+          >
+            🏠 Accueil
+          </button>
+          <button 
+            onClick={() => { setCurrentPage('catalog'); setActiveCategory('TOUS'); }}
+            style={navBtnStyle(currentPage === 'catalog')}
+          >
+            🛍️ Catalogue & Produits
+          </button>
+          <button 
+            onClick={() => setCurrentPage('services')}
+            style={navBtnStyle(currentPage === 'services')}
+          >
+            🛠️ Nos Services
+          </button>
         </nav>
       </header>
 
+      {/* Contenu dynamique selon la page active */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
-        
-        {/* Section Nos Services Professionnels */}
-        <div style={{ marginBottom: '60px' }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
-            🛠️ Nos Prestations & Services Techniques
-          </h3>
-          <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.95rem', marginBottom: '30px' }}>
-            Interventions professionnelles sur site pour particuliers et entreprises.
-          </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
-            {servicesList.map((srv) => (
-              <div key={srv.id} style={{
-                background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '30px',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
-              }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                    <span style={{ fontSize: '2.5rem' }}>{srv.icon}</span>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '5px 12px', borderRadius: '20px' }}>
-                      {srv.badge}
-                    </span>
-                  </div>
-                  <h4 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', marginBottom: '10px' }}>{srv.title}</h4>
-                  <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '25px' }}>{srv.desc}</p>
-                </div>
-
-                <a 
-                  href={`https://wa.me/212602784528?text=${encodeURIComponent(`Bonjour RichTech Maroc, je suis intéressé par votre service : ${srv.title}`)}`}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{
-                    background: '#0f172a', color: '#fff', textAlign: 'center', padding: '12px',
-                    borderRadius: '10px', fontWeight: '700', textDecoration: 'none', fontSize: '0.9rem',
-                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
-                  }}
-                >
-                  Demander un devis 💬
-                </a>
+        {/* 1. PAGE ACCUEIL */}
+        {currentPage === 'home' && (
+          <div>
+            {/* Bannière de Bienvenue */}
+            <div style={{
+              background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+              color: '#ffffff', borderRadius: '24px', padding: '50px 40px', textAlign: 'center',
+              marginBottom: '50px', boxShadow: '0 20px 25px -5px rgba(15, 23, 42, 0.1)'
+            }}>
+              <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '15px' }}>Bienvenue chez RichTech Maroc 🚀</h2>
+              <p style={{ fontSize: '1.1rem', color: '#cbd5e1', maxWidth: '700px', margin: '0 auto 25px auto', lineHeight: '1.6' }}>
+                Votre partenaire de confiance pour toutes vos solutions informatiques, abonnements IPTV, licences officielles et installations de sécurité.
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
+                <button onClick={() => { setCurrentPage('catalog'); setActiveCategory('TOUS'); }} style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '12px 25px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', fontSize: '1rem' }}>
+                  Voir le Catalogue 🛍️
+                </button>
+                <button onClick={() => setCurrentPage('services')} style={{ background: 'transparent', color: '#fff', border: '2px solid #cbd5e1', padding: '12px 25px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', fontSize: '1rem' }}>
+                  Découvrir nos Services 🛠️
+                </button>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Catalogue Produits */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a', textTransform: 'uppercase' }}>
-            ⚡ Catalogue : {activeCategory}
-          </h3>
-        </div>
-
-        {loading ? (
-          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Chargement du catalogue...</p>
-        ) : filteredProducts.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit disponible dans cette catégorie.</p>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px', marginBottom: '60px' }}>
-            {filteredProducts.map((product) => (
-              <div key={product.id} style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
-              }}>
-                <div>
-                  {product.image_url && (
-                    <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
-                      <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
-                  )}
-
-                  <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
-                    {product.category}
-                  </span>
-                  
-                  <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
-                    {product.title}
-                  </h4>
-                  
-                  <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0', whiteSpace: 'pre-line' }}>
-                    {product.description}
-                  </p>
-                </div>
-
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
-                      {product.price} DH
-                    </span>
-                  </div>
-
-                  <button onClick={() => setSelectedProduct(product)} style={{
-                    width: '100%', background: '#0f172a',
-                    color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
-                  }}>
-                    Acheter 🛒
+            {/* Aperçu Produits Populaires */}
+            {!loading && popularProducts.length > 0 && (
+              <div style={{ marginBottom: '60px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a' }}>
+                    🔥 Produits Populaires & Recommandés
+                  </h3>
+                  <button onClick={() => { setCurrentPage('catalog'); setActiveCategory('TOUS'); }} style={{ background: 'transparent', border: 'none', color: '#0284c7', fontWeight: '700', cursor: 'pointer' }}>
+                    Voir tout →
                   </button>
                 </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
+                  {popularProducts.map((product) => (
+                    <div key={`pop-${product.id}`} style={{
+                      background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '26px',
+                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+                    }}>
+                      <div>
+                        {product.image_url && (
+                          <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
+                            <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                        )}
+                        <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                          Populaire ⭐
+                        </span>
+                        <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>{product.title}</h4>
+                        <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0', whiteSpace: 'pre-line' }}>{product.description}</p>
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
+                          <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>{product.price} DH</span>
+                        </div>
+                        <button onClick={() => setSelectedProduct(product)} style={{
+                          width: '100%', background: '#0f172a', color: '#fff', border: 'none', padding: '13px',
+                          borderRadius: '10px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                        }}>
+                          Acheter 🛒
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
+
+            {/* Avis Clients */}
+            <div style={{ marginBottom: '60px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
+                ⭐ Ce que disent nos clients au Maroc
+              </h3>
+              <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.95rem', marginBottom: '35px' }}>
+                La satisfaction de nos clients est notre priorité absolue.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                {testimonials.map((t) => (
+                  <div key={t.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ color: '#f59e0b', fontSize: '1.1rem', marginBottom: '10px' }}>★★★★★</div>
+                      <p style={{ color: '#334155', fontSize: '0.92rem', fontStyle: 'italic', lineHeight: '1.5', marginBottom: '15px' }}>"{t.comment}"</p>
+                    </div>
+                    <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: '700', fontSize: '0.9rem', color: '#0f172a' }}>{t.name}</span>
+                      <span style={{ fontSize: '0.8rem', color: '#64748b', background: '#e2e8f0', padding: '2px 8px', borderRadius: '6px' }}>{t.city}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Section Avis Clients */}
-        <div style={{ marginTop: '80px', marginBottom: '80px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
-            ⭐ Ce que disent nos clients au Maroc
-          </h3>
-          <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.95rem', marginBottom: '35px' }}>
-            La satisfaction de nos clients est notre priorité absolue.
-          </p>
+        {/* 2. PAGE CATALOGUE & PRODUITS */}
+        {currentPage === 'catalog' && (
+          <div>
+            {/* Filtres par catégories */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '35px' }}>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  style={{
+                    background: activeCategory === cat ? '#0f172a' : '#ffffff',
+                    color: activeCategory === cat ? '#ffffff' : '#475569',
+                    border: '1px solid #cbd5e1', padding: '10px 22px', borderRadius: '30px',
+                    fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                  }}
+                >
+                  {cat.toUpperCase()}
+                </button>
+              ))}
+            </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-            {testimonials.map((t) => (
-              <div key={t.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ color: '#f59e0b', fontSize: '1.1rem', marginBottom: '10px' }}>★★★★★</div>
-                  <p style={{ color: '#334155', fontSize: '0.92rem', fontStyle: 'italic', lineHeight: '1.5', marginBottom: '15px' }}>
-                    "{t.comment}"
-                  </p>
-                </div>
-                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: '700', fontSize: '0.9rem', color: '#0f172a' }}>{t.name}</span>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b', background: '#e2e8f0', padding: '2px 8px', borderRadius: '6px' }}>{t.city}</span>
-                </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a', textTransform: 'uppercase' }}>
+                ⚡ Catalogue : {activeCategory}
+              </h3>
+            </div>
+
+            {loading ? (
+              <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Chargement du catalogue...</p>
+            ) : filteredProducts.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit disponible dans cette catégorie.</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px', marginBottom: '60px' }}>
+                {filteredProducts.map((product) => (
+                  <div key={product.id} style={{
+                    background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '26px',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+                  }}>
+                    <div>
+                      {product.image_url && (
+                        <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
+                          <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      )}
+                      <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                        {product.category}
+                      </span>
+                      <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>{product.title}</h4>
+                      <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0', whiteSpace: 'pre-line' }}>{product.description}</p>
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>{product.price} DH</span>
+                      </div>
+                      <button onClick={() => setSelectedProduct(product)} style={{
+                        width: '100%', background: '#0f172a', color: '#fff', border: 'none', padding: '13px',
+                        borderRadius: '10px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                      }}>
+                        Acheter 🛒
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        </div>
+        )}
 
-        {/* Section Produits Populaires */}
-        {!loading && popularProducts.length > 0 && (
-          <div style={{ marginTop: '40px', borderTop: '2px solid #e2e8f0', paddingTop: '40px' }}>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: '0 0 25px 0', color: '#0f172a' }}>
-              🔥 Produits Populaires & Recommandés
+        {/* 3. PAGE NOS SERVICES */}
+        {currentPage === 'services' && (
+          <div style={{ marginBottom: '60px' }}>
+            <h3 style={{ fontSize: '1.6rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
+              🛠️ Nos Prestations & Services Techniques
             </h3>
+            <p style={{ textAlign: 'center', color: '#64748b', fontSize: '1rem', marginBottom: '40px' }}>
+              Interventions professionnelles sur terrain pour particuliers et entreprises au Maroc.
+            </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
-              {popularProducts.map((product) => (
-                <div key={`pop-${product.id}`} style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
-                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
+              {servicesList.map((srv) => (
+                <div key={srv.id} style={{
+                  background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '35px',
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
                 }}>
                   <div>
-                    {product.image_url && (
-                      <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
-                        <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                    )}
-
-                    <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
-                      Populaire ⭐
-                    </span>
-                    
-                    <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
-                      {product.title}
-                    </h4>
-                    
-                    <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0', whiteSpace: 'pre-line' }}>
-                      {product.description}
-                    </p>
-                  </div>
-
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
-                        {product.price} DH
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                      <span style={{ fontSize: '2.8rem' }}>{srv.icon}</span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '6px 14px', borderRadius: '20px' }}>
+                        {srv.badge}
                       </span>
                     </div>
-
-                    <button onClick={() => setSelectedProduct(product)} style={{
-                      width: '100%', background: '#0f172a',
-                      color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
-                    }}>
-                      Acheter 🛒
-                    </button>
+                    <h4 style={{ fontSize: '1.35rem', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>{srv.title}</h4>
+                    <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '30px' }}>{srv.desc}</p>
                   </div>
+
+                  <a 
+                    href={`https://wa.me/212602784528?text=${encodeURIComponent(`Bonjour RichTech Maroc, je suis intéressé par votre service : ${srv.title}`)}`}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      background: '#0f172a', color: '#fff', textAlign: 'center', padding: '14px',
+                      borderRadius: '10px', fontWeight: '700', textDecoration: 'none', fontSize: '0.95rem',
+                      boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                    }}
+                  >
+                    Demander un devis 💬
+                  </a>
                 </div>
               ))}
             </div>
           </div>
         )}
+
       </main>
 
+      {/* Footer */}
       <footer style={{
         maxWidth: '1350px', margin: '80px auto 0 auto', background: '#ffffff',
         border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px 30px',
@@ -459,6 +486,16 @@ export default function App() {
 }
 
 const inputStyleLight = { background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', color: '#0f172a', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
+function navBtnStyle(isActive) {
+  return {
+    background: isActive ? '#0f172a' : '#f1f5f9',
+    color: isActive ? '#ffffff' : '#475569',
+    border: '1px solid #cbd5e1', padding: '10px 24px', borderRadius: '30px',
+    fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer',
+    boxShadow: isActive ? '0 4px 12px rgba(15, 23, 42, 0.2)' : 'none',
+    transition: 'all 0.2s ease'
+  };
+}
 function socialBtnStyle(color1, color2) {
   return {
     background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
