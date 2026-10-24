@@ -242,33 +242,13 @@ export default function App() {
     fetch(CSV_URL)
       .then((res) => res.text())
       .then((csvText) => {
-        const lines = [];
-        let currentRow = '';
-        let insideQuotes = false;
-
-        for (let i = 0; i < csvText.length; i++) {
-          const char = csvText[i];
-          if (char === '"') {
-            insideQuotes = !insideQuotes;
-            currentRow += char;
-          } else if ((char === '\n' || char === '\r') && !insideQuotes) {
-            if (currentRow.trim() !== '') {
-              lines.push(currentRow);
-            }
-            currentRow = '';
-          } else {
-            currentRow += char;
-          }
-        }
-        if (currentRow.trim() !== '') {
-          lines.push(currentRow);
-        }
-
+        const lines = csvText.split('\n');
         const parsedProducts = [];
 
-        // On commence directement à partir de la ligne 1 (ou 2 selon les index) mais sans bloquer les titres valides
         for (let i = 1; i < lines.length; i++) {
-          const line = lines[i];
+          const line = lines[i].trim();
+          if (!line) continue;
+
           const row = [];
           let inQuotes = false;
           let currentVal = '';
@@ -287,15 +267,11 @@ export default function App() {
 
           const cleanRow = row.map(val => val.replace(/^["'](.+)["']$/, '$1').trim());
 
-          const title = cleanRow[1] || '';
-          const category = cleanRow[2] || 'Solution Pro';
-
-          // On vérifie simplement si la ligne contient un vrai titre de produit et pas du code injecté
-          if (cleanRow.length >= 2 && title && !title.toLowerCase().includes('prototype') && !title.toLowerCase().includes('function(a)')) {
+          if (cleanRow.length >= 2 && cleanRow[1]) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
-              title: title,
-              category: category,
+              title: cleanRow[1],
+              category: cleanRow[2] || 'Solution Pro',
               description: cleanRow[3] || 'Solution professionnelle certifiée RichTech Maroc.',
               price: Number(cleanRow[4]) || 0,
               image_url: cleanRow[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
