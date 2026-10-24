@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fsf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2pgy_yIHrCeNWm07SaS6XkH2Fysf9JIoE1BGq-WYh5-0yyCu8YyFt89WjDdhzL5CI_/pub?gid=0&single=true&output=csv';
 
 const t = {
   fr: {
@@ -17,10 +17,6 @@ const t = {
     testimonialsSub: "La satisfaction de nos clients est notre priorité absolue.",
     catalogTitle: "⚡ Catalogue",
     searchPlaceholder: "🔍 Rechercher un produit (ex: Windows, Dahua, IPTV...)",
-    sortBy: "Trier par :",
-    sortDefault: "Par défaut",
-    sortPriceAsc: "Prix : Moins cher au plus cher",
-    sortPriceDesc: "Prix : Plus cher au moins cher",
     loading: "Chargement du catalogue...",
     noProducts: "Aucun produit trouvé.",
     buyNow: "Acheter direct 🚀",
@@ -28,17 +24,15 @@ const t = {
     servicesTitle: "🛠️ Nos Prestations & Services Techniques",
     servicesSub: "Interventions professionnelles sur terrain pour particuliers et entreprises au Maroc.",
     requestQuote: "Demander un devis 💬",
-    faqTitle: "❓ Questions Fréquentes (FAQ)",
-    faqSub: "Tout ce que vous devez savoir sur nos services et livraisons au Maroc.",
     footerText: "RichTech Maroc • Solutions Informatiques & Sécurité",
     footerSub: "Contactez-nous directement sur nos réseaux officiels :",
     rights: "© 2026 RichTech Maroc. Tous droits réservés.",
-    modalTitle: "🧾 Aperçu de votre facture & Commande",
+    modalTitle: "🛒 Valider votre panier",
     name: "Nom",
     firstName: "Prénom",
     email: "Adresse e-mail",
     phone: "Numéro de téléphone",
-    whatsappBtn: "Envoyer la commande sur WhatsApp 🚀",
+    whatsappBtn: "Envoyer la commande groupée sur WhatsApp 🚀",
     cancel: "Annuler ✕",
     cartTitle: "🛒 Votre Panier",
     total: "Total :",
@@ -59,10 +53,6 @@ const t = {
     testimonialsSub: "Client satisfaction is our top priority.",
     catalogTitle: "⚡ Catalog",
     searchPlaceholder: "🔍 Search a product (e.g. Windows, Dahua, IPTV...)",
-    sortBy: "Sort by:",
-    sortDefault: "Default",
-    sortPriceAsc: "Price: Low to High",
-    sortPriceDesc: "Price: High to Low",
     loading: "Loading catalog...",
     noProducts: "No products found.",
     buyNow: "Buy Now 🚀",
@@ -70,12 +60,10 @@ const t = {
     servicesTitle: "🛠️ Our Technical Services",
     servicesSub: "Professional on-site interventions for individuals and businesses in Morocco.",
     requestQuote: "Request a quote 💬",
-    faqTitle: "❓ Frequently Asked Questions (FAQ)",
-    faqSub: "Everything you need to know about our services and deliveries in Morocco.",
     footerText: "RichTech Morocco • IT Solutions & Security",
     footerSub: "Contact us directly on our official networks:",
     rights: "© 2026 RichTech Morocco. All rights reserved.",
-    modalTitle: "🧾 Invoice Preview & Order",
+    modalTitle: "🛒 Complete Your Order",
     name: "Last Name",
     firstName: "First Name",
     email: "Email Address",
@@ -101,10 +89,6 @@ const t = {
     testimonialsSub: "رضا عملائنا هو أولويتنا القصوى.",
     catalogTitle: "⚡ الكتالوج",
     searchPlaceholder: "🔍 ابحث عن منتج (مثل: Windows, Dahua, IPTV...)",
-    sortBy: "ترتيب حسب:",
-    sortDefault: "الافتراضي",
-    sortPriceAsc: "السعر: من الأرخص للأغلى",
-    sortPriceDesc: "السعر: من الأغلى للأرخص",
     loading: "جاري تحميل الكتالوج...",
     noProducts: "لا توجد منتجات مطابقة.",
     buyNow: "شراء مباشر 🚀",
@@ -112,17 +96,15 @@ const t = {
     servicesTitle: "🛠️ خدماتنا والتدخلات التقنية",
     servicesSub: "تدخلات مهنية في الميدان للأفراد والشركات في المغرب.",
     requestQuote: "اطلب تسعيرة 💬",
-    faqTitle: "❓ الأسئلة الشائعة (FAQ)",
-    faqSub: "كل ما تحتاج معرفته حول خدماتنا، التوصيل والتفعيل في المغرب.",
     footerText: "ريتش تك المغرب • حلول إعلامية وأمنية",
     footerSub: "تواصل معنا مباشرة عبر شبكاتنا الرسمية:",
     rights: "© 2026 ريتش تك المغرب. جميع الحقوق محفوظة.",
-    modalTitle: "🧾 معاينة الفاتورة وتأكيد الطلب",
+    modalTitle: "🛒 تأكيد طلب السلة",
     name: "النسب",
     firstName: "الإسم الشخصي",
     email: "البريد الإلكتروني",
     phone: "رقم الهاتف",
-    whatsappBtn: "إرسال الطلب عبر واتساب 🚀",
+    whatsappBtn: "إرسال الطلب الشامل عبر واتساب 🚀",
     cancel: "إلغاء ✕",
     cartTitle: "🛒 سلة المشتريات",
     total: "المجموع الإجمالي:",
@@ -138,10 +120,10 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [activeCategory, setActiveCategory] = useState('TOUS');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOption, setSortOption] = useState('default');
   const [lang, setLang] = useState('fr'); 
   const [darkMode, setDarkMode] = useState(false);
 
+  // Panier & Toast States
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
@@ -151,8 +133,6 @@ export default function App() {
   const [clientPrenom, setClientPrenom] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
-
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const currentText = t[lang];
 
@@ -213,25 +193,6 @@ export default function App() {
     }
   ];
 
-  const faqList = [
-    {
-      q: lang === 'ar' ? "كيف يتم تسليم التراخيص الرقمية والبرامج؟" : "Comment se fait la livraison des licences numériques ?",
-      a: lang === 'ar' ? "يتم إرسال مفتاح الترخيص الرسمي ورابط التحميل مباشرة عبر واتساب في غضون بضع دقائق بعد تأكيد الطلب." : "La clé de licence officielle et le lien de téléchargement sont envoyés directement via WhatsApp en quelques minutes après validation."
-    },
-    {
-      q: lang === 'ar' ? "هل اشتراكات IPTV مستقرة أثناء المباريات؟" : "Les abonnements IPTV sont-ils stables pendant les matchs ?",
-      a: lang === 'ar' ? "نعم، نستخدم سيرفرات قوية جداً (T-REX وغيرها) مضمونة ضد التقطع وبجودة عالية 4K/FHD." : "Oui, nous proposons des serveurs ultra-stables (T-REX) garantis sans coupure en qualité HD/4K."
-    },
-    {
-      q: lang === 'ar' ? "هل تقدمون خدمات التركيب الميداني في المغرب؟" : "Proposez-vous des installations sur site au Maroc ?",
-      a: lang === 'ar' ? "نعم، نوفر تدخلات تقنية لتركيب كاميرات المراقبة والشبكات." : "Oui, nous assurons des interventions professionnelles pour les caméras et réseaux."
-    }
-  ];
-
-  const partners = [
-    "Dahua Technology", "Microsoft Windows", "Office 365", "T-REX IPTV", "Cisco Systems", "TP-Link", "Hikvision", "Adobe CC"
-  ];
-
   const testimonials = [
     { id: 1, name: "Youssef B.", city: "Casablanca", comment: "Service rapide et fiable ! J'ai reçu ma licence Windows 11 en moins de 10 minutes sur WhatsApp. Top.", rating: 5 },
     { id: 2, name: "Mehdi K.", city: "Rabat", comment: "Pack caméras Dahua top qualité, vision nocturne claire et installation facile. Merci RichTech !", rating: 5 },
@@ -242,13 +203,32 @@ export default function App() {
     fetch(CSV_URL)
       .then((res) => res.text())
       .then((csvText) => {
-        const lines = csvText.split('\n');
+        const lines = [];
+        let currentRow = '';
+        let insideQuotes = false;
+
+        for (let i = 0; i < csvText.length; i++) {
+          const char = csvText[i];
+          if (char === '"') {
+            insideQuotes = !insideQuotes;
+            currentRow += char;
+          } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+            if (currentRow.trim() !== '') {
+              lines.push(currentRow);
+            }
+            currentRow = '';
+          } else {
+            currentRow += char;
+          }
+        }
+        if (currentRow.trim() !== '') {
+          lines.push(currentRow);
+        }
+
         const parsedProducts = [];
 
         for (let i = 1; i < lines.length; i++) {
-          const line = lines[i].trim();
-          if (!line) continue;
-
+          const line = lines[i];
           const row = [];
           let inQuotes = false;
           let currentVal = '';
@@ -267,11 +247,19 @@ export default function App() {
 
           const cleanRow = row.map(val => val.replace(/^["'](.+)["']$/, '$1').trim());
 
-          if (cleanRow.length >= 2 && cleanRow[1]) {
+          const title = cleanRow[1] || '';
+          const category = cleanRow[2] || 'Solution Pro';
+
+          const isJunk = (text) => {
+            const lower = text.toLowerCase();
+            return lower.includes('function') || lower.includes('prototype') || lower.includes('navigator') || lower.includes('return') || lower.length > 80;
+          };
+
+          if (cleanRow.length >= 2 && title && !isJunk(title) && !isJunk(category)) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
-              title: cleanRow[1],
-              category: cleanRow[2] || 'Solution Pro',
+              title: title,
+              category: category,
               description: cleanRow[3] || 'Solution professionnelle certifiée RichTech Maroc.',
               price: Number(cleanRow[4]) || 0,
               image_url: cleanRow[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
@@ -299,10 +287,10 @@ export default function App() {
     let itemsText = cart.map(item => `- ${item.title} (x${item.quantity}) : ${item.price * item.quantity} DH`).join('\n');
 
     const textMessage = encodeURIComponent(
-      `FACTURE & COMMANDE - RichTech Maroc\n\n` +
-      `Articles :\n${itemsText}\n\n` +
-      `Total Global : ${cartTotal} DH\n\n` +
-      `Client : ${clientNom} ${clientPrenom}\n` +
+      `COMMANDE GLOBALE - RichTech Maroc\n\n` +
+      `Produits commandés :\n${itemsText}\n\n` +
+      `Montant Total : ${cartTotal} DH\n\n` +
+      `Nom : ${clientNom} ${clientPrenom}\n` +
       `E-mail : ${clientEmail}\n` +
       `Téléphone : ${clientPhone}\n\n` +
       `Merci de valider ma commande !`
@@ -335,12 +323,6 @@ export default function App() {
     return matchesCategory && matchesSearch;
   });
 
-  if (sortOption === 'price-asc') {
-    filteredProducts.sort((a, b) => a.price - b.price);
-  } else if (sortOption === 'price-desc') {
-    filteredProducts.sort((a, b) => b.price - a.price);
-  }
-
   const popularProducts = products.slice(0, 3);
 
   return (
@@ -354,19 +336,10 @@ export default function App() {
           0% { transform: translateX(100%); }
           100% { transform: translateX(-100%); }
         }
-        @keyframes marqueePartners {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
         .animated-banner {
           display: inline-block;
           white-space: nowrap;
           animation: marquee 18s linear infinite;
-        }
-        .partners-ticker {
-          display: flex;
-          width: max-content;
-          animation: marqueePartners 20s linear infinite;
         }
         .product-card {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -384,6 +357,7 @@ export default function App() {
         }
       `}</style>
 
+      {/* Toast Notification */}
       {toastMessage && (
         <div className="toast-notification" style={{
           position: 'fixed', bottom: '30px', [lang === 'ar' ? 'left' : 'right']: '30px',
@@ -394,6 +368,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Modal Panier (Drawer / Modal) */}
       {isCartOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -449,6 +424,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Modal Commande Globale (Checkout Form) */}
       {isCheckoutOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -457,24 +433,13 @@ export default function App() {
         }}>
           <div style={{
             background: theme.cardBg, border: `1px solid ${theme.border}`,
-            borderRadius: '20px', padding: '30px', width: '100%', maxWidth: '480px',
+            borderRadius: '20px', padding: '30px', width: '100%', maxWidth: '450px',
             boxShadow: '0 25px 50px rgba(0,0,0,0.15)', textAlign: lang === 'ar' ? 'right' : 'left', color: theme.textPrimary
           }}>
-            <h3 style={{ marginBottom: '10px', fontSize: '1.3rem' }}>{currentText.modalTitle}</h3>
-            
-            <div style={{ background: darkMode ? '#0f172a' : '#f1f5f9', padding: '15px', borderRadius: '12px', marginBottom: '20px', fontSize: '0.9rem' }}>
-              <div style={{ fontWeight: '700', marginBottom: '8px', color: '#0284c7' }}>RichTech Maroc - Facture Proforma</div>
-              {cart.map(item => (
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span>{item.title} (x{item.quantity})</span>
-                  <span style={{ fontWeight: '700' }}>{item.price * item.quantity} DH</span>
-                </div>
-              ))}
-              <div style={{ borderTop: `1px dashed ${theme.border}`, marginTop: '10px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: '800', color: '#16a34a' }}>
-                <span>Total Global :</span>
-                <span>{cartTotal} DH</span>
-              </div>
-            </div>
+            <h3 style={{ marginBottom: '10px', fontSize: '1.4rem' }}>{currentText.modalTitle}</h3>
+            <p style={{ color: '#0284c7', fontSize: '0.95rem', marginBottom: '20px' }}>
+              {currentText.total} <strong>{cartTotal} DH</strong> ({totalItemsCount} articles)
+            </p>
 
             <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <input type="text" placeholder={currentText.name} value={clientNom} onChange={e => setClientNom(e.target.value)} style={inputStyle(darkMode)} required />
@@ -501,6 +466,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Banner */}
       <div style={{
         background: 'linear-gradient(90deg, #0284c7, #16a34a, #0f172a)',
         color: '#ffffff', padding: '10px 0', borderRadius: '12px', marginBottom: '25px',
@@ -512,8 +478,10 @@ export default function App() {
         </div>
       </div>
 
+      {/* Header */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: theme.cardBg, borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: `1px solid ${theme.border}`, position: 'relative' }}>
         
+        {/* Contrôles Haut : Dark Mode, Panier et Langues */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '10px' }}>
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
@@ -528,6 +496,7 @@ export default function App() {
               {darkMode ? '☀️ Mode Clair' : '🌙 Mode Sombre'}
             </button>
 
+            {/* Bouton Panier Flottant */}
             <button
               onClick={() => setIsCartOpen(true)}
               style={{
@@ -595,6 +564,7 @@ export default function App() {
         </nav>
       </header>
 
+      {/* Main Pages */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
 
         {currentPage === 'home' && (
@@ -618,6 +588,7 @@ export default function App() {
               </div>
             </div>
 
+            {/* Populaires */}
             {!loading && popularProducts.length > 0 && (
               <div style={{ marginBottom: '60px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: `2px solid ${theme.border}`, paddingBottom: '12px' }}>
@@ -670,16 +641,7 @@ export default function App() {
               </div>
             )}
 
-            <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '20px', padding: '25px 0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-              <div className="partners-ticker">
-                {[...partners, ...partners].map((partner, idx) => (
-                  <div key={idx} style={{ padding: '0 40px', fontSize: '1.1rem', fontWeight: '800', color: theme.textSecondary, whiteSpace: 'nowrap', letterSpacing: '1px' }}>
-                    ✨ {partner}
-                  </div>
-                ))}
-              </div>
-            </div>
-
+            {/* Testimonials */}
             <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
                 {currentText.testimonialsTitle}
@@ -702,63 +664,24 @@ export default function App() {
                 ))}
               </div>
             </div>
-
-            <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
-                {currentText.faqTitle}
-              </h3>
-              <p style={{ textAlign: 'center', color: theme.textSecondary, fontSize: '0.95rem', marginBottom: '30px' }}>
-                {currentText.faqSub}
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '800px', margin: '0 auto' }}>
-                {faqList.map((faq, index) => (
-                  <div key={index} style={{ border: `1px solid ${theme.border}`, borderRadius: '12px', overflow: 'hidden', background: darkMode ? '#1e293b' : '#f8fafc' }}>
-                    <button
-                      onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
-                      style={{ width: '100%', background: 'transparent', border: 'none', padding: '18px 20px', textAlign: lang === 'ar' ? 'right' : 'left', fontSize: '1rem', fontWeight: '700', color: theme.textPrimary, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                    >
-                      <span>{faq.q}</span>
-                      <span>{openFaqIndex === index ? '➖' : '➕'}</span>
-                    </button>
-                    {openFaqIndex === index && (
-                      <div style={{ padding: '0 20px 18px 20px', color: theme.textSecondary, fontSize: '0.95rem', lineHeight: '1.6', textAlign: lang === 'ar' ? 'right' : 'left' }}>
-                        {faq.a}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
           </div>
         )}
 
+        {/* 2. CATALOGUE & RECHERCHE */}
         {currentPage === 'catalog' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px', maxWidth: '800px', margin: '0 auto 25px auto' }}>
+            <div style={{ marginBottom: '25px', maxWidth: '600px', margin: '0 auto 25px auto' }}>
               <input
                 type="text"
                 placeholder={currentText.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
-                  flex: 1, minWidth: '280px', padding: '14px 20px', borderRadius: '30px', border: `1px solid ${theme.border}`,
+                  width: '100%', padding: '14px 20px', borderRadius: '30px', border: `1px solid ${theme.border}`,
                   background: theme.cardBg, color: theme.textPrimary, fontSize: '0.95rem', outline: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
                   boxSizing: 'border-box'
                 }}
               />
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                style={{
-                  padding: '14px 20px', borderRadius: '30px', border: `1px solid ${theme.border}`,
-                  background: theme.cardBg, color: theme.textPrimary, fontSize: '0.95rem', outline: 'none', cursor: 'pointer'
-                }}
-              >
-                <option value="default">{currentText.sortDefault}</option>
-                <option value="price-asc">{currentText.sortPriceAsc}</option>
-                <option value="price-desc">{currentText.sortPriceDesc}</option>
-              </select>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '35px' }}>
@@ -833,6 +756,7 @@ export default function App() {
           </div>
         )}
 
+        {/* 3. SERVICES */}
         {currentPage === 'services' && (
           <div style={{ marginBottom: '60px' }}>
             <h3 style={{ fontSize: '1.6rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
@@ -879,6 +803,7 @@ export default function App() {
 
       </main>
 
+      {/* Footer */}
       <footer style={{
         maxWidth: '1350px', margin: '80px auto 0 auto', background: theme.cardBg,
         border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px 30px',
