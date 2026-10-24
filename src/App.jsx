@@ -224,7 +224,7 @@ export default function App() {
     },
     {
       q: lang === 'ar' ? "هل تقدمون خدمات التركيب الميداني في المغرب؟" : "Proposez-vous des installations sur site au Maroc ?",
-      a: lang === 'ar' ? "نعم، نوفر تدخلات تقنية لتركيب كاميرات المراقبة والشبكات." : "Oui, nous assurons des interventions professionalnelles pour les caméras et réseaux."
+      a: lang === 'ar' ? "نعم، نوفر تدخلات تقنية لتركيب كاميرات المراقبة والشبكات." : "Oui, nous assurons des interventions professionnelles pour les caméras et réseaux."
     }
   ];
 
@@ -266,6 +266,7 @@ export default function App() {
 
         const parsedProducts = [];
 
+        // On commence directement à partir de la ligne 1 (ou 2 selon les index) mais sans bloquer les titres valides
         for (let i = 1; i < lines.length; i++) {
           const line = lines[i];
           const row = [];
@@ -289,23 +290,8 @@ export default function App() {
           const title = cleanRow[1] || '';
           const category = cleanRow[2] || 'Solution Pro';
 
-          // Filtre anti-injection intelligent : bloque tout texte suspect (scripts, prototypes, fonctions)
-          const isJunk = (text) => {
-            const lower = text.toLowerCase();
-            return (
-              lower.includes('function') || 
-              lower.includes('prototype') || 
-              lower.includes('navigator') || 
-              lower.includes('return') || 
-              lower.includes('blockers') || 
-              lower.includes('math.random') ||
-              lower.includes('report') ||
-              lower.includes('document.addeventlistener') ||
-              text.length > 50
-            );
-          };
-
-          if (cleanRow.length >= 2 && title && !isJunk(title) && !isJunk(category)) {
+          // On vérifie simplement si la ligne contient un vrai titre de produit et pas du code injecté
+          if (cleanRow.length >= 2 && title && !title.toLowerCase().includes('prototype') && !title.toLowerCase().includes('function(a)')) {
             parsedProducts.push({
               id: cleanRow[0] || i.toString(),
               title: title,
