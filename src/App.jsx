@@ -19,21 +19,25 @@ const t = {
     searchPlaceholder: "🔍 Rechercher un produit (ex: Windows, Dahua, IPTV...)",
     loading: "Chargement du catalogue...",
     noProducts: "Aucun produit trouvé.",
-    buy: "Acheter 🛒",
+    buyNow: "Acheter direct 🚀",
+    addToCart: "Ajouter au panier 🛒",
     servicesTitle: "🛠️ Nos Prestations & Services Techniques",
     servicesSub: "Interventions professionnelles sur terrain pour particuliers et entreprises au Maroc.",
     requestQuote: "Demander un devis 💬",
     footerText: "RichTech Maroc • Solutions Informatiques & Sécurité",
     footerSub: "Contactez-nous directement sur nos réseaux officiels :",
     rights: "© 2026 RichTech Maroc. Tous droits réservés.",
-    modalTitle: "🛒 Valider votre commande",
-    product: "Produit :",
+    modalTitle: "🛒 Valider votre panier",
     name: "Nom",
     firstName: "Prénom",
     email: "Adresse e-mail",
     phone: "Numéro de téléphone",
-    whatsappBtn: "Envoyer la commande sur WhatsApp 🚀",
-    cancel: "Annuler ✕"
+    whatsappBtn: "Envoyer la commande groupée sur WhatsApp 🚀",
+    cancel: "Annuler ✕",
+    cartTitle: "🛒 Votre Panier",
+    total: "Total :",
+    emptyCart: "Votre panier est vide.",
+    checkout: "Valider et commander 📦"
   },
   en: {
     home: "🏠 Home",
@@ -51,7 +55,8 @@ const t = {
     searchPlaceholder: "🔍 Search a product (e.g. Windows, Dahua, IPTV...)",
     loading: "Loading catalog...",
     noProducts: "No products found.",
-    buy: "Buy 🛒",
+    buyNow: "Buy Now 🚀",
+    addToCart: "Add to cart 🛒",
     servicesTitle: "🛠️ Our Technical Services",
     servicesSub: "Professional on-site interventions for individuals and businesses in Morocco.",
     requestQuote: "Request a quote 💬",
@@ -59,13 +64,16 @@ const t = {
     footerSub: "Contact us directly on our official networks:",
     rights: "© 2026 RichTech Morocco. All rights reserved.",
     modalTitle: "🛒 Complete Your Order",
-    product: "Product:",
     name: "Last Name",
     firstName: "First Name",
     email: "Email Address",
     phone: "Phone Number",
     whatsappBtn: "Send order via WhatsApp 🚀",
-    cancel: "Cancel ✕"
+    cancel: "Cancel ✕",
+    cartTitle: "🛒 Your Cart",
+    total: "Total:",
+    emptyCart: "Your cart is empty.",
+    checkout: "Proceed to checkout 📦"
   },
   ar: {
     home: "🏠 الرئيسية",
@@ -83,21 +91,25 @@ const t = {
     searchPlaceholder: "🔍 ابحث عن منتج (مثل: Windows, Dahua, IPTV...)",
     loading: "جاري تحميل الكتالوج...",
     noProducts: "لا توجد منتجات مطابقة.",
-    buy: "شراء 🛒",
+    buyNow: "شراء مباشر 🚀",
+    addToCart: "أضف للسلة 🛒",
     servicesTitle: "🛠️ خدماتنا والتدخلات التقنية",
     servicesSub: "تدخلات مهنية في الميدان للأفراد والشركات في المغرب.",
     requestQuote: "اطلب تسعيرة 💬",
     footerText: "ريتش تك المغرب • حلول إعلامية وأمنية",
     footerSub: "تواصل معنا مباشرة عبر شبكاتنا الرسمية:",
     rights: "© 2026 ريتش تك المغرب. جميع الحقوق محفوظة.",
-    modalTitle: "🛒 تأكيد طلبك",
-    product: "المنتج:",
+    modalTitle: "🛒 تأكيد طلب السلة",
     name: "النسب",
     firstName: "الإسم الشخصي",
     email: "البريد الإلكتروني",
     phone: "رقم الهاتف",
-    whatsappBtn: "إرسال الطلب عبر واتساب 🚀",
-    cancel: "إلغاء ✕"
+    whatsappBtn: "إرسال الطلب الشامل عبر واتساب 🚀",
+    cancel: "إلغاء ✕",
+    cartTitle: "🛒 سلة المشتريات",
+    total: "المجموع الإجمالي:",
+    emptyCart: "سلة المشتريات فارغة.",
+    checkout: "إتمام الطلب والدفع 📦"
   }
 };
 
@@ -111,7 +123,12 @@ export default function App() {
   const [lang, setLang] = useState('fr'); 
   const [darkMode, setDarkMode] = useState(false);
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  // Panier & Toast States
+  const [cart, setCart] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [clientNom, setClientNom] = useState('');
   const [clientPrenom, setClientPrenom] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -126,6 +143,31 @@ export default function App() {
     textSecondary: darkMode ? '#94a3b8' : '#475569',
     border: darkMode ? '#334155' : '#e2e8f0',
   };
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
+  const addToCart = (product) => {
+    setCart(prevCart => {
+      const existing = prevCart.find(item => item.id === product.id);
+      if (existing) {
+        return prevCart.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
+    showToast(lang === 'ar' ? `تمت إضافة "${product.title}" إلى السلة 🛒` : `"${product.title}" ajouté au panier 🛒`);
+  };
+
+  const removeFromCart = (id) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== id));
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const servicesList = [
     {
@@ -208,7 +250,6 @@ export default function App() {
           const title = cleanRow[1] || '';
           const category = cleanRow[2] || 'Solution Pro';
 
-          // Filtre anti-extensions / anti-scripts injectés par le navigateur
           const isJunk = (text) => {
             const lower = text.toLowerCase();
             return lower.includes('function') || lower.includes('prototype') || lower.includes('navigator') || lower.includes('return') || lower.length > 80;
@@ -243,10 +284,12 @@ export default function App() {
 
     const whatsappNumber = "212602784528"; 
 
+    let itemsText = cart.map(item => `- ${item.title} (x${item.quantity}) : ${item.price * item.quantity} DH`).join('\n');
+
     const textMessage = encodeURIComponent(
-      `NOUVELLE COMMANDE - RichTech Maroc\n\n` +
-      `Produit : ${selectedProduct.title}\n` +
-      `Prix : ${selectedProduct.price} DH\n\n` +
+      `COMMANDE GLOBALE - RichTech Maroc\n\n` +
+      `Produits commandés :\n${itemsText}\n\n` +
+      `Montant Total : ${cartTotal} DH\n\n` +
       `Nom : ${clientNom} ${clientPrenom}\n` +
       `E-mail : ${clientEmail}\n` +
       `Téléphone : ${clientPhone}\n\n` +
@@ -255,8 +298,21 @@ export default function App() {
 
     window.open(`https://wa.me/${whatsappNumber}?text=${textMessage}`, '_blank');
 
-    setSelectedProduct(null);
+    setIsCheckoutOpen(false);
+    setIsCartOpen(false);
+    setCart([]);
     setClientNom(''); setClientPrenom(''); setClientEmail(''); setClientPhone('');
+  };
+
+  const handleDirectBuy = (product) => {
+    const whatsappNumber = "212602784528"; 
+    const textMessage = encodeURIComponent(
+      `ACHAT DIRECT - RichTech Maroc\n\n` +
+      `Produit : ${product.title}\n` +
+      `Prix : ${product.price} DH\n\n` +
+      `Merci de valider ma commande !`
+    );
+    window.open(`https://wa.me/${whatsappNumber}?text=${textMessage}`, '_blank');
   };
 
   const categories = ['TOUS', ...Array.from(new Set(products.map(p => p.category)))];
@@ -292,24 +348,88 @@ export default function App() {
           transform: translateY(-6px);
           box-shadow: 0 20px 30px -10px rgba(2, 132, 199, 0.2);
         }
+        @keyframes slideIn {
+          from { transform: translateY(-20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-notification {
+          animation: slideIn 0.3s ease forwards;
+        }
       `}</style>
 
-      <div style={{
-        background: 'linear-gradient(90deg, #0284c7, #16a34a, #0f172a)',
-        color: '#ffffff', padding: '10px 0', borderRadius: '12px', marginBottom: '25px',
-        overflow: 'hidden', whiteSpace: 'nowrap', fontWeight: '700', fontSize: '0.9rem',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-      }}>
-        <div className="animated-banner">
-          🚀 تخفيضات كبرى على جميع تراخيص البرامج واشتراكات IPTV • 🎥 عروض حصرية على تركيب كاميرات المراقبة Dahua • 🛠️ ضمان جودة الخدمة والسرعة في التوصيل عبر واتساب!
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="toast-notification" style={{
+          position: 'fixed', bottom: '30px', [lang === 'ar' ? 'left' : 'right']: '30px',
+          background: '#16a34a', color: '#fff', padding: '12px 24px', borderRadius: '12px',
+          fontWeight: '700', zIndex: 2000, boxShadow: '0 10px 25px rgba(22, 163, 74, 0.3)'
+        }}>
+          {toastMessage}
         </div>
-      </div>
+      )}
 
-      {selectedProduct && (
+      {/* Modal Panier (Drawer / Modal) */}
+      {isCartOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
           background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '20px'
+          display: 'flex', justifyContent: lang === 'ar' ? 'flex-start' : 'flex-end', zIndex: 1000
+        }}>
+          <div style={{
+            background: theme.cardBg, borderLeft: lang === 'ar' ? 'none' : `1px solid ${theme.border}`,
+            borderRight: lang === 'ar' ? `1px solid ${theme.border}` : 'none',
+            width: '100%', maxWidth: '420px', height: '100%', padding: '30px',
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            boxShadow: '-10px 0 30px rgba(0,0,0,0.15)', color: theme.textPrimary, boxSizing: 'border-box'
+          }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: `1px solid ${theme.border}`, paddingBottom: '15px' }}>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', margin: 0 }}>{currentText.cartTitle}</h3>
+                <button onClick={() => setIsCartOpen(false)} style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: theme.textPrimary }}>✕</button>
+              </div>
+
+              {cart.length === 0 ? (
+                <p style={{ textAlign: 'center', color: theme.textSecondary, marginTop: '50px' }}>{currentText.emptyCart}</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxHeight: '50vh', overflowY: 'auto' }}>
+                  {cart.map(item => (
+                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: darkMode ? '#334155' : '#f8fafc', padding: '12px 15px', borderRadius: '12px', border: `1px solid ${theme.border}` }}>
+                      <div>
+                        <h4 style={{ fontSize: '0.95rem', fontWeight: '700', margin: '0 0 5px 0' }}>{item.title}</h4>
+                        <span style={{ fontSize: '0.85rem', color: '#16a34a', fontWeight: '800' }}>{item.price} DH x {item.quantity}</span>
+                      </div>
+                      <button onClick={() => removeFromCart(item.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}>🗑️</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `1px solid ${theme.border}`, paddingTop: '15px', marginBottom: '20px', fontSize: '1.1rem', fontWeight: '800' }}>
+                  <span>{currentText.total}</span>
+                  <span style={{ color: '#16a34a', fontSize: '1.4rem' }}>{cartTotal} DH</span>
+                </div>
+                <button onClick={() => setIsCheckoutOpen(true)} style={{
+                  width: '100%', background: '#16a34a', color: '#fff', border: 'none', padding: '15px',
+                  borderRadius: '12px', fontWeight: '700', fontSize: '1rem', cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(22, 163, 74, 0.3)'
+                }}>
+                  {currentText.checkout}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal Commande Globale (Checkout Form) */}
+      {isCheckoutOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: '20px'
         }}>
           <div style={{
             background: theme.cardBg, border: `1px solid ${theme.border}`,
@@ -318,7 +438,7 @@ export default function App() {
           }}>
             <h3 style={{ marginBottom: '10px', fontSize: '1.4rem' }}>{currentText.modalTitle}</h3>
             <p style={{ color: '#0284c7', fontSize: '0.95rem', marginBottom: '20px' }}>
-              {currentText.product} <strong>{selectedProduct.title}</strong> ({selectedProduct.price} DH)
+              {currentText.total} <strong>{cartTotal} DH</strong> ({totalItemsCount} articles)
             </p>
 
             <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -336,7 +456,7 @@ export default function App() {
               </button>
             </form>
 
-            <button onClick={() => setSelectedProduct(null)} style={{
+            <button onClick={() => setIsCheckoutOpen(false)} style={{
               background: 'transparent', border: 'none', color: theme.textSecondary, cursor: 'pointer',
               marginTop: '15px', width: '100%', textAlign: 'center', fontSize: '0.9rem'
             }}>
@@ -346,20 +466,48 @@ export default function App() {
         </div>
       )}
 
+      {/* Banner */}
+      <div style={{
+        background: 'linear-gradient(90deg, #0284c7, #16a34a, #0f172a)',
+        color: '#ffffff', padding: '10px 0', borderRadius: '12px', marginBottom: '25px',
+        overflow: 'hidden', whiteSpace: 'nowrap', fontWeight: '700', fontSize: '0.9rem',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+      }}>
+        <div className="animated-banner">
+          🚀 تخفيضات كبرى على جميع تراخيص البرامج واشتراكات IPTV • 🎥 عروض حصرية على تركيب كاميرات المراقبة Dahua • 🛠️ ضمان جودة الخدمة والسرعة في التوصيل عبر واتساب!
+        </div>
+      </div>
+
+      {/* Header */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: theme.cardBg, borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: `1px solid ${theme.border}`, position: 'relative' }}>
         
+        {/* Contrôles Haut : Dark Mode, Panier et Langues */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '10px' }}>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            style={{
-              background: darkMode ? '#334155' : '#0f172a',
-              color: '#ffffff', border: `1px solid ${theme.border}`, padding: '10px 18px', borderRadius: '12px',
-              fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-            }}
-          >
-            {darkMode ? '☀️ Mode Clair' : '🌙 Mode Sombre'}
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              style={{
+                background: darkMode ? '#334155' : '#0f172a',
+                color: '#ffffff', border: `1px solid ${theme.border}`, padding: '10px 18px', borderRadius: '12px',
+                fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}
+            >
+              {darkMode ? '☀️ Mode Clair' : '🌙 Mode Sombre'}
+            </button>
+
+            {/* Bouton Panier Flottant */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              style={{
+                background: '#0284c7', color: '#ffffff', border: 'none', padding: '10px 18px', borderRadius: '12px',
+                fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)'
+              }}
+            >
+              🛒 Panier ({totalItemsCount})
+            </button>
+          </div>
 
           <div style={{ display: 'flex', gap: '6px' }}>
             {['fr', 'en', 'ar'].map((l) => (
@@ -416,6 +564,7 @@ export default function App() {
         </nav>
       </header>
 
+      {/* Main Pages */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
 
         {currentPage === 'home' && (
@@ -439,6 +588,7 @@ export default function App() {
               </div>
             </div>
 
+            {/* Populaires */}
             {!loading && popularProducts.length > 0 && (
               <div style={{ marginBottom: '60px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: `2px solid ${theme.border}`, paddingBottom: '12px' }}>
@@ -470,12 +620,20 @@ export default function App() {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1px solid ${theme.border}`, paddingTop: '15px', marginBottom: '12px' }}>
                           <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>{product.price} DH</span>
                         </div>
-                        <button onClick={() => setSelectedProduct(product)} style={{
-                          width: '100%', background: darkMode ? '#38bdf8' : '#0f172a', color: darkMode ? '#0f172a' : '#fff', border: 'none', padding: '13px',
-                          borderRadius: '10px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                        }}>
-                          {currentText.buy}
-                        </button>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button onClick={() => addToCart(product)} style={{
+                            flex: 1, background: '#0284c7', color: '#fff', border: 'none', padding: '12px',
+                            borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '0.9rem'
+                          }}>
+                            {currentText.addToCart}
+                          </button>
+                          <button onClick={() => handleDirectBuy(product)} style={{
+                            flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px',
+                            borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '0.9rem'
+                          }}>
+                            {currentText.buyNow}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -483,6 +641,7 @@ export default function App() {
               </div>
             )}
 
+            {/* Testimonials */}
             <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
                 {currentText.testimonialsTitle}
@@ -508,6 +667,7 @@ export default function App() {
           </div>
         )}
 
+        {/* 2. CATALOGUE & RECHERCHE */}
         {currentPage === 'catalog' && (
           <div>
             <div style={{ marginBottom: '25px', maxWidth: '600px', margin: '0 auto 25px auto' }}>
@@ -574,12 +734,20 @@ export default function App() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1px solid ${theme.border}`, paddingTop: '15px', marginBottom: '12px' }}>
                         <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>{product.price} DH</span>
                       </div>
-                      <button onClick={() => setSelectedProduct(product)} style={{
-                        width: '100%', background: darkMode ? '#38bdf8' : '#0f172a', color: darkMode ? '#0f172a' : '#fff', border: 'none', padding: '13px',
-                        borderRadius: '10px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                      }}>
-                        {currentText.buy}
-                      </button>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={() => addToCart(product)} style={{
+                          flex: 1, background: '#0284c7', color: '#fff', border: 'none', padding: '12px',
+                          borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '0.9rem'
+                        }}>
+                          {currentText.addToCart}
+                        </button>
+                        <button onClick={() => handleDirectBuy(product)} style={{
+                          flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '12px',
+                          borderRadius: '10px', fontWeight: '700', cursor: 'pointer', fontSize: '0.9rem'
+                        }}>
+                          {currentText.buyNow}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -588,6 +756,7 @@ export default function App() {
           </div>
         )}
 
+        {/* 3. SERVICES */}
         {currentPage === 'services' && (
           <div style={{ marginBottom: '60px' }}>
             <h3 style={{ fontSize: '1.6rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
@@ -634,6 +803,7 @@ export default function App() {
 
       </main>
 
+      {/* Footer */}
       <footer style={{
         maxWidth: '1350px', margin: '80px auto 0 auto', background: theme.cardBg,
         border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px 30px',
