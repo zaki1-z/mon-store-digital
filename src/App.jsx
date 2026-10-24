@@ -13,7 +13,31 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // Avis clients fictifs ou réels pour rassurer les visiteurs
+  // Services techniques offerts par RichTech Maroc
+  const servicesList = [
+    {
+      id: 1,
+      title: "Installation Réseaux & Câblage",
+      desc: "Configuration de routeurs, switches, points d'accès Wi-Fi et câblage structuré pour entreprises, bureaux et résidences.",
+      icon: "🌐",
+      badge: "Sur Devis"
+    },
+    {
+      id: 2,
+      title: "Installation Caméras de Surveillance",
+      desc: "Pose et configuration de systèmes de vidéosurveillance (IP & analogique) avec vision nocturne et accès direct sur votre smartphone.",
+      icon: "🎥",
+      badge: "Clé en main"
+    },
+    {
+      id: 3,
+      title: "Maintenance Informatique & Matériel",
+      desc: "Diagnostic, réparation de cartes mères (micro-soudure), optimisation PC/PC portables et nettoyage de systèmes informatiques.",
+      icon: "🛠️",
+      badge: "Diagnostic pro"
+    }
+  ];
+
   const testimonials = [
     { id: 1, name: "Youssef B.", city: "Casablanca", comment: "Service rapide et fiable ! J'ai reçu ma licence Windows 11 en moins de 10 minutes sur WhatsApp. Top.", rating: 5 },
     { id: 2, name: "Mehdi K.", city: "Rabat", comment: "Pack caméras Dahua top qualité, vision nocturne claire et installation facile. Merci RichTech !", rating: 5 },
@@ -171,6 +195,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Header & Navbar */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: '#ffffff', borderRadius: '24px', padding: '45px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         <div style={{
           width: '130px', height: '130px', margin: '0 auto 20px auto',
@@ -221,6 +246,51 @@ export default function App() {
       </header>
 
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
+        
+        {/* Section Nos Services Professionnels */}
+        <div style={{ marginBottom: '60px' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
+            🛠️ Nos Prestations & Services Techniques
+          </h3>
+          <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.95rem', marginBottom: '30px' }}>
+            Interventions professionnelles sur site pour particuliers et entreprises.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px' }}>
+            {servicesList.map((srv) => (
+              <div key={srv.id} style={{
+                background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '30px',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+              }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <span style={{ fontSize: '2.5rem' }}>{srv.icon}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '5px 12px', borderRadius: '20px' }}>
+                      {srv.badge}
+                    </span>
+                  </div>
+                  <h4 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', marginBottom: '10px' }}>{srv.title}</h4>
+                  <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '25px' }}>{srv.desc}</p>
+                </div>
+
+                <a 
+                  href={`https://wa.me/212602784528?text=${encodeURIComponent(`Bonjour RichTech Maroc, je suis intéressé par votre service : ${srv.title}`)}`}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{
+                    background: '#0f172a', color: '#fff', textAlign: 'center', padding: '12px',
+                    borderRadius: '10px', fontWeight: '700', textDecoration: 'none', fontSize: '0.9rem',
+                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                  }}
+                >
+                  Demander un devis 💬
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Catalogue Produits */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
           <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a', textTransform: 'uppercase' }}>
             ⚡ Catalogue : {activeCategory}
@@ -280,7 +350,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Section Avis Clients / Confiance */}
+        {/* Section Avis Clients */}
         <div style={{ marginTop: '80px', marginBottom: '80px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: '#0f172a' }}>
             ⭐ Ce que disent nos clients au Maroc
