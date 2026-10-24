@@ -142,7 +142,6 @@ export default function App() {
   const [lang, setLang] = useState('fr'); 
   const [darkMode, setDarkMode] = useState(false);
 
-  // Panier & Toast States
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
@@ -153,7 +152,6 @@ export default function App() {
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
 
-  // FAQ Accordion State
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const currentText = t[lang];
@@ -291,9 +289,19 @@ export default function App() {
           const title = cleanRow[1] || '';
           const category = cleanRow[2] || 'Solution Pro';
 
+          // Filtre ultra-strict contre les scripts injectés ou extensions de navigateur
           const isJunk = (text) => {
             const lower = text.toLowerCase();
-            return lower.includes('function') || lower.includes('prototype') || lower.includes('navigator') || lower.includes('return') || lower.length > 80;
+            return (
+              lower.includes('function') || 
+              lower.includes('prototype') || 
+              lower.includes('navigator') || 
+              lower.includes('return') || 
+              lower.includes('blockers') || 
+              lower.includes('math.random') ||
+              lower.includes('report') ||
+              text.length > 60
+            );
           };
 
           if (cleanRow.length >= 2 && title && !isJunk(title) && !isJunk(category)) {
@@ -364,7 +372,6 @@ export default function App() {
     return matchesCategory && matchesSearch;
   });
 
-  // Tri des produits
   if (sortOption === 'price-asc') {
     filteredProducts.sort((a, b) => a.price - b.price);
   } else if (sortOption === 'price-desc') {
@@ -414,7 +421,6 @@ export default function App() {
         }
       `}</style>
 
-      {/* Toast Notification */}
       {toastMessage && (
         <div className="toast-notification" style={{
           position: 'fixed', bottom: '30px', [lang === 'ar' ? 'left' : 'right']: '30px',
@@ -425,7 +431,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal Panier */}
       {isCartOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -481,7 +486,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal Facture Preview & Checkout */}
       {isCheckoutOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -495,7 +499,6 @@ export default function App() {
           }}>
             <h3 style={{ marginBottom: '10px', fontSize: '1.3rem' }}>{currentText.modalTitle}</h3>
             
-            {/* Facture Preview Box */}
             <div style={{ background: darkMode ? '#0f172a' : '#f1f5f9', padding: '15px', borderRadius: '12px', marginBottom: '20px', fontSize: '0.9rem' }}>
               <div style={{ fontWeight: '700', marginBottom: '8px', color: '#0284c7' }}>RichTech Maroc - Facture Proforma</div>
               {cart.map(item => (
@@ -535,7 +538,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Banner */}
       <div style={{
         background: 'linear-gradient(90deg, #0284c7, #16a34a, #0f172a)',
         color: '#ffffff', padding: '10px 0', borderRadius: '12px', marginBottom: '25px',
@@ -547,7 +549,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Header */}
       <header style={{ maxWidth: '1350px', margin: '0 auto 40px auto', textAlign: 'center', background: theme.cardBg, borderRadius: '24px', padding: '40px 30px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: `1px solid ${theme.border}`, position: 'relative' }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '10px' }}>
@@ -631,7 +632,6 @@ export default function App() {
         </nav>
       </header>
 
-      {/* Main Pages */}
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
 
         {currentPage === 'home' && (
@@ -655,7 +655,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Populaires */}
             {!loading && popularProducts.length > 0 && (
               <div style={{ marginBottom: '60px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: `2px solid ${theme.border}`, paddingBottom: '12px' }}>
@@ -708,7 +707,6 @@ export default function App() {
               </div>
             )}
 
-            {/* Partners Brands Ticker */}
             <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '20px', padding: '25px 0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
               <div className="partners-ticker">
                 {[...partners, ...partners].map((partner, idx) => (
@@ -719,7 +717,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Testimonials */}
             <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
                 {currentText.testimonialsTitle}
@@ -743,7 +740,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* FAQ Interactive */}
             <div style={{ marginBottom: '60px', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
                 {currentText.faqTitle}
@@ -774,7 +770,6 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. CATALOGUE & RECHERCHE */}
         {currentPage === 'catalog' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px', maxWidth: '800px', margin: '0 auto 25px auto' }}>
@@ -875,7 +870,6 @@ export default function App() {
           </div>
         )}
 
-        {/* 3. SERVICES */}
         {currentPage === 'services' && (
           <div style={{ marginBottom: '60px' }}>
             <h3 style={{ fontSize: '1.6rem', fontWeight: '800', textAlign: 'center', marginBottom: '10px', color: theme.textPrimary }}>
@@ -922,7 +916,6 @@ export default function App() {
 
       </main>
 
-      {/* Footer */}
       <footer style={{
         maxWidth: '1350px', margin: '80px auto 0 auto', background: theme.cardBg,
         border: `1px solid ${theme.border}`, borderRadius: '24px', padding: '40px 30px',
@@ -952,7 +945,7 @@ function inputStyle(darkMode) {
     background: darkMode ? '#334155' : '#f8fafc',
     border: `1px solid ${darkMode ? '#475569' : '#cbd5e1'}`,
     borderRadius: '10px', padding: '12px', color: darkMode ? '#f8fafc' : '#0f172a',
-    fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'box-border'
+    fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box'
   };
 }
 
