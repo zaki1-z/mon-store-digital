@@ -5,6 +5,7 @@ const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ_-scpc4pIJ2p
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('TOUS');
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [clientNom, setClientNom] = useState('');
@@ -43,7 +44,7 @@ export default function App() {
             parsedProducts.push({
               id: row[0] || i.toString(),
               title: row[1] || '',
-              category: row[2] || 'Solution Pro',
+              category: (row[2] && typeof row[2] === 'string') ? row[2].trim() : 'Solution Pro',
               description: row[3] || 'Solution professionnelle certifiée RichTech Maroc.',
               price: Number(row[4]) || 0,
               image_url: row[5] || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60'
@@ -87,14 +88,13 @@ export default function App() {
     setClientPhone('');
   };
 
-  const categoriesMap = products.reduce((acc, product) => {
-    const cat = (product.category && typeof product.category === 'string') ? product.category.trim() : 'Autres';
-    if (!acc[cat]) {
-      acc[cat] = [];
-    }
-    acc[cat].push(product);
-    return acc;
-  }, {});
+  const categories = ['TOUS', ...Array.from(new Set(products.map(p => p.category)))];
+
+  const filteredProducts = activeCategory === 'TOUS' 
+    ? products 
+    : products.filter(p => p.category.toLowerCase() === activeCategory.toLowerCase());
+
+  const popularProducts = products.slice(0, 3);
 
   return (
     <div style={{
@@ -167,70 +167,146 @@ export default function App() {
         <p style={{ color: '#475569', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.5' }}>
           La technologie au service de votre avenir. Informatique, caméras de surveillance, réseaux, IPTV et licences officielles.
         </p>
+
+        {/* Barre de navigation des catégories */}
+        <nav style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginTop: '30px' }}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              style={{
+                background: activeCategory === cat ? '#0f172a' : '#f1f5f9',
+                color: activeCategory === cat ? '#ffffff' : '#475569',
+                border: '1px solid #cbd5e1',
+                padding: '10px 22px',
+                borderRadius: '30px',
+                fontWeight: '700',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeCategory === cat ? '0 4px 12px rgba(15, 23, 42, 0.2)' : 'none'
+              }}
+            >
+              {cat.toUpperCase()}
+            </button>
+          ))}
+        </nav>
       </header>
 
       <main style={{ maxWidth: '1350px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a', textTransform: 'uppercase' }}>
+            ⚡ Catalogue : {activeCategory}
+          </h3>
+        </div>
+
         {loading ? (
           <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Chargement du catalogue...</p>
-        ) : products.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit disponible pour le moment.</p>
+        ) : filteredProducts.length === 0 ? (
+          <p style={{ textAlign: 'center', color: '#64748b', padding: '40px' }}>Aucun produit disponible dans cette catégorie.</p>
         ) : (
-          Object.keys(categoriesMap).map((categoryName) => (
-            <div key={categoryName} style={{ marginBottom: '50px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '10px' }}>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: 0, color: '#0f172a', textTransform: 'uppercase' }}>
-                  ⚡ {categoryName}
-                </h3>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
-                {categoriesMap[categoryName].map((product) => (
-                  <div key={product.id} style={{
-                    background: '#ffffff',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
-                    display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
-                  }}>
-                    <div>
-                      {product.image_url && (
-                        <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
-                          <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </div>
-                      )}
-
-                      <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
-                        {product.category}
-                      </span>
-                      
-                      <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
-                        {product.title}
-                      </h4>
-                      
-                      <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
-                        {product.description}
-                      </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px', marginBottom: '60px' }}>
+            {filteredProducts.map((product) => (
+              <div key={product.id} style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+              }}>
+                <div>
+                  {product.image_url && (
+                    <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
+                      <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
+                  )}
 
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
-                          {product.price} DH
-                        </span>
-                      </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#0284c7', background: 'rgba(2, 132, 199, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                    {product.category}
+                  </span>
+                  
+                  <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
+                    {product.title}
+                  </h4>
+                  
+                  <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
+                    {product.description}
+                  </p>
+                </div>
 
-                      <button onClick={() => setSelectedProduct(product)} style={{
-                        width: '100%', background: '#0f172a',
-                        color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
-                      }}>
-                        Acheter 🛒
-                      </button>
-                    </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
+                      {product.price} DH
+                    </span>
                   </div>
-                ))}
+
+                  <button onClick={() => setSelectedProduct(product)} style={{
+                    width: '100%', background: '#0f172a',
+                    color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                  }}>
+                    Acheter 🛒
+                  </button>
+                </div>
               </div>
+            ))}
+          </div>
+        )}
+
+        {/* Section Suggestions / Produits Populaires */}
+        {!loading && popularProducts.length > 0 && (
+          <div style={{ marginTop: '80px', borderTop: '2px solid #e2e8f0', paddingTop: '40px' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: '700', margin: '0 0 25px 0', color: '#0f172a' }}>
+              🔥 Produits Populaires & Recommandés
+            </h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
+              {popularProducts.map((product) => (
+                <div key={`pop-${product.id}`} style={{
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '20px', padding: '26px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
+                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+                }}>
+                  <div>
+                    {product.image_url && (
+                      <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '15px', background: '#f1f5f9' }}>
+                        <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    )}
+
+                    <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '4px 10px', borderRadius: '6px' }}>
+                      Populaire ⭐
+                    </span>
+                    
+                    <h4 style={{ fontSize: '1.3rem', fontWeight: '700', margin: '12px 0 8px 0', color: '#0f172a' }}>
+                      {product.title}
+                    </h4>
+                    
+                    <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.5', margin: '0 0 20px 0' }}>
+                      {product.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '15px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '1.7rem', fontWeight: '800', color: '#16a34a' }}>
+                        {product.price} DH
+                      </span>
+                    </div>
+
+                    <button onClick={() => setSelectedProduct(product)} style={{
+                      width: '100%', background: '#0f172a',
+                      color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontWeight: '700', cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+                    }}>
+                      Acheter 🛒
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))
+          </div>
         )}
       </main>
 
@@ -241,29 +317,3 @@ export default function App() {
       }}>
         <h4 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
           RichTech Maroc • Solutions Informatiques & Sécurité
-        </h4>
-        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '25px' }}>
-          Contactez-nous directement sur nos réseaux officiels :
-        </p>
-
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
-          <a href="https://www.instagram.com/richtechmaroc" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#db2777', '#f43f5e')}>📸 Instagram</a>
-          <a href="https://www.facebook.com/share/1AAqXciBiU/" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#2563eb', '#3b82f6')}>📘 Facebook</a>
-          <a href="https://wa.me/212602784528" target="_blank" rel="noopener noreferrer" style={socialBtnStyle('#16a34a', '#22c55e')}>💬 WhatsApp</a>
-        </div>
-
-        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 RichTech Maroc. Tous droits réservés.</p>
-      </footer>
-    </div>
-  );
-}
-
-const inputStyleLight = { background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', color: '#0f172a', fontSize: '0.9rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
-function socialBtnStyle(color1, color2) {
-  return {
-    background: `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`,
-    color: '#fff', padding: '11px 22px', borderRadius: '12px',
-    textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-  };
-}
